@@ -16,6 +16,8 @@ library ('randomForest')
 library(scales) # for "comma"
 library(magrittr)
 
+#Set variables 
+
 
 setwd ("D:/Balclab/projects/project-VSP/")
 
@@ -70,8 +72,8 @@ text(exac_ENSP, as.character(exac_ENSP$Allele.Count), pos=3, col="grey", cex=0.8
 
 # Create an empty grid where n is the total number of cells
 grd              <- as.data.frame(spsample(exac_ENSP, "regular", n=10000))
-names(grd)       <- c("AA_POSITION", "PROVEAN_SCORE")
-coordinates(grd) <- c("AA_POSITION", "PROVEAN_SCORE")
+names(grd)       <- c("AA_POSITION", "MUT_PRED")
+coordinates(grd) <- c("AA_POSITION", "MUT_PRED")
 gridded(grd)     <- TRUE  # Create SpatialPixel object
 fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 # Interpolate the surface using a power value of 2 (idp=2.0)
