@@ -1,0 +1,30 @@
+# Code writtern by Sal. This is used to validate the kriging map. If you have validation datapoints with x, y, and z values that were not include in the kriging model, you can based on the measured x, y to get the predicted z from the landscape and then compare the predicted z to the measured z-value.
+# load kriging maps
+
+options(stringsAsFactors=F)
+
+train1<-read.csv("/Chao/Work/Chao-paper/CFTR/Figures/GS+/Cutting/SAGA output/cutting-saga.csv") # use read.csv if csv
+test1<-read.csv("/Chao/Work/Chao-paper/CFTR/Figures/GS+/Cutting/OLd/Validation/vertexforcutting.csv")
+
+# function to get matches - check column name matches
+
+get_matches<-function(train1,test1,outname){
+  outmatr<-vector()
+  for(i in 1:nrow(test1)){
+    x<-which(abs(train1$X-test1$N[i])==min(abs(train1$X-test1$N[i]))) 
+    #xval<-train1$X
+    xy_subset<-train1[x,]
+    y_subset<-train1[x,2]
+    y<-which(abs(y_subset-test1$Exp.Traf[i])==min(abs(y_subset-test1$Exp.Traf[i])))
+    yval<-y_subset[y]
+    out<-xy_subset[y,]
+    outmatr=rbind(outmatr,out)
+  }
+  
+  outmatr
+  write.table(outmatr,quote=F,row.names=F,sep="\t",file=paste(outname,"_matches.txt",sep=""))
+}
+
+# use the function
+
+get_matches(train1,test1,"test2")
