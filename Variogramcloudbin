@@ -1,0 +1,21 @@
+# Code written by Sal. This is for variogram analysis. 
+#I have a list of 1954 data points with distance and value.
+# I want to calculate the average, standard deviation and standard error of the mean for each distance interval (0.007) ,
+# i.e. for the data points in the distance range of 0~0.007, 0.007~0.014, and so on.
+
+varcloud<-read.csv("/Chao/Work/Chao-paper/CFTR/Figures/GS+/Ivacaftor/Ivacaftor/variogramcloud.csv")
+
+breaks<-seq(from=0,to=max(varcloud$Distance),by=0.01)
+bins<-cut(varcloud$Distance,breaks=breaks)
+
+bins_mean<-tapply(varcloud$Value,bins,mean)
+bins_sd<-tapply(varcloud$Value,bins,sd)
+bins_n<-tapply(varcloud$Value,bins,length)
+
+
+bins_sem<-bins_sd/sqrt(bins_n)
+
+varcloud_binned<-cbind(bins_mean,bins_sd,bins_sem,bins_n)
+colnames(varcloud_binned)<-c("avg","sd","sem","ss")
+
+write.table(varcloud_binned,file="vardendrogram_binned.tsv",sep="\t",quote=F,col.names=T,row.names=T)
