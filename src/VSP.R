@@ -17,18 +17,22 @@ library(scales) # for "comma"
 library(magrittr)
 
 
-setwd ("D:/Balclab/projects/VSP/")
+setwd ("D:/Balclab/projects/project-VSP/")
 
+#read data files
+exac_ENSP<-read.csv("Data/Exac_PKD2_ENSP.csv")
 
-df <-read.csv ("PKD_Preds.csv",  sep = ",")
-df<-df[!(df$AApos == "466"),]
+#modify amino acid notation to drop .p (ExAC format)
+exac_ENSP$Ptein.Consequence<-gsub("p.","", as.character(exac_ENSP$amino_acid_change))
 
-exac2<-read.csv("Exac_PKD2.csv")
-
-exac_ENSP<-read.csv("Exac_PKD2_ESNP.csv")
-exac_ENSP$Ptein.Consequence<-gsub("p.","", as.character(exac_ENSP$Ptein.Consequence))
+#adjust prediction scores - so that the range is similar to AA coordinates
 exac_ENSP$PROVEAN_SCORE <- exac_ENSP$PROVEAN_SCORE*100
+exac_ENSP$MUT_PRED<-exac_ENSP$MUT_PRED*100
+exac_ENSP$MUT_PRED<-rescale(exac_ENSP$MUT_PRED, to =c(1,1000))
+
+#set max allele count to a value best suited for analysis 
 exac_ENSP$Allele.Count[exac_ENSP$Allele.Count>4]<-4
+
 
 exac_CFTR<-read.csv("CFTR_Exac.csv")
 exac_CFTR$Conseqence <- as.character(exac_CFTR$Conseqence)
@@ -59,8 +63,8 @@ plot(exac_CFTR, add=TRUE, pch=16, cex=0.5)
 text(coordinates(exac_CFTR), as.character(round(exac_CFTR$AA_POSITION,1)), pos=4, cex=0.8, col="blue")
 par(OP)
 
-#Spacial Interpolation 
-coordinates(exac_ENSP) <- c("AA_POSITION","PROVEAN_SCORE")
+#Spacial Interpolation using amino acid index and prediction score as x and y axis
+coordinates(exac_ENSP) <- c("AA_POSITION","MUT_PRED")
 plot(exac_ENSP, pch=16, ,cex=( (exac_ENSP$Allele.Count-1)/200))
 text(exac_ENSP, as.character(exac_ENSP$Allele.Count), pos=3, col="grey", cex=0.8)
 
