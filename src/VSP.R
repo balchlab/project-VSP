@@ -36,7 +36,7 @@ exac_CFTR$PROVEAN_SCORE <- exac_CFTR$PROVEAN_SCORE*120
 exac_CFTR$Allele.Count[exac_CFTR$Allele.Count>10]<-10
 
 
-#Spacial Interpolation  CFTR
+#Spacial Interpolation for  CFTR
 coordinates(exac_CFTR) <- c("AA_POSITION","PROVEAN_SCORE")
 plot(exac_CFTR, pch=16, ,cex=( (exac_CFTR$Allele.Count-1)/250))
 text(exac_CFTR, as.character(exac_CFTR$Allele.Count), pos=3, col="grey", cex=0.8)
@@ -47,8 +47,10 @@ names(grd_cf)       <- c("AA_POSITION", "PROVEAN_SCORE")
 coordinates(grd_cf) <- c("AA_POSITION", "PROVEAN_SCORE")
 gridded(grd_cf)     <- TRUE  # Create SpatialPixel object
 fullgrid(grd_cf)    <- TRUE  # Create SpatialGrid object
+
 # Interpolate the surface using a power value of 2 (idp=2.0)
 exac_CFTR.idw <- idw(Allele.Count~1,exac_CFTR,newdata=grd_cf,idp=2.0)
+
 # Plot the raster and the sampled points
 OP      <- par( mar=c(0,0,0,0))
 image(exac_CFTR.idw,"var1.pred",col=terrain.colors(20))
@@ -92,7 +94,7 @@ par(OP)
 
 
 
-#Attempt at Kriging 
+#Attempt at Kriging, work in progress
 exac_ENSP %>% as.data.frame %>% 
   ggplot(aes(AA_POSITION, PROVEAN_SCORE)) + geom_point(aes(size=Allele.Count), color="blue", alpha=3/4) + 
   ggtitle("Zinc Concentration (ppm)") + coord_equal() + theme_bw()
@@ -113,8 +115,6 @@ lzn.vgm <- variogram(log(Allele.Count)~1, exac_ENSP) # calculates sample variogr
 lzn.fit <- fit.variogram(lzn.vgm, model=vgm(1, "Sph",800,-200)) # fit model
 
 plot(lzn.vgm, lzn.fit)
-
-
 
 
 
@@ -148,7 +148,7 @@ grid.arrange(plot1, plot2, ncol = 2)
 
 p + geom_text(angle=45) 
 
-
+#Sals function to strip amino acid notation for variants... Maybe put in a separate file? 
 split_cols<-function(foo){
   out<-vector()
   for(i in 1:length(foo)){
@@ -166,6 +166,8 @@ split_cols<-function(foo){
   
 }
 
+
+#Stripping protein variant notation into REF - ALT - AA_POSITION
 PROVEAN<-split_cols(exac_ENSP$Ptein.Consequence)
 write.csv(PROVEAN,"PKD2_provean.csv")
 
@@ -183,15 +185,12 @@ mut_pred$mutation<-sub("^","p.",mut_pred$mutation)
 PKD2_mut_pred <-subset(mut_pred, ID=="PKD2_HUMAN")
 
 
-
-
+#Not sure what this is anymore
 PKD2_tran<-read.csv("PKD2_var_tran.csv")
 NameList<-c("amino_acid_change","effect")
 idx<-match(NameList, names(exac2))
 idx<-sort(c(idx-1,idx))
 exac_sub<-exac2[,idx]
-
-
 
 
 drops<-c("Alternate", "Annotation")
