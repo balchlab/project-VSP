@@ -1,4 +1,11 @@
+'''
+Converts ExAC missense protein notation to single letter notation
+TODO: get PROVEAN.
 
+input: .txt file with "Arg13Pro" style notation
+output: .txt file with  "R13P" notation
+'''
+#Dictionary with amino acids
 replacements = {
 'Gly':'G',
 'Ala':'A',
@@ -23,15 +30,27 @@ replacements = {
 
 
 
-lines = []
-with open('Mutant_list.txt') as infile:
-    for line in infile:
+def AAconverter(Input):
+#returns converted text file list
+
+    lines = []
+    for line in Input:
         for src, target in replacements.items():
             line = line.replace(src, target)
         lines.append(line)
-with open('Converted_Mutant_list.txt', 'w') as outfile:
-    for line in lines:
-        outfile.write(line)
+
+    with open('Converted_Mutant_list.txt', 'w') as outfile:
+        for line in lines:
+            outfile.write(line)
+def main ():
+    with open('Mutant_list.txt') as Input:
+        AAconverter(Input)
+
+
+
+if __name__ == '__main__':
+    main()
+
 
 
 
