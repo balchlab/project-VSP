@@ -1,7 +1,7 @@
 #BalchLab 2016
 #Creates a geostatistical map of genes using ExAC data
 
-
+library(fields)
 library(sp)
 library(gstat)
 
@@ -58,7 +58,7 @@ fullgrid(grd_cf)    <- TRUE  # Create SpatialGrid object
 exac_CFTR.idw <- idw(Allele.Count~1,exac_CFTR,newdata=grd_cf,idp=2.0)
 
 # Plot the raster and the sampled points
-OP      <- par( mar=c(0,0,0,0))
+OP      <- par( mar=c(1,1,1,1))
 image(exac_CFTR.idw,"var1.pred",col=terrain.colors(20))
 contour(exac_CFTR.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
 plot(exac_CFTR, add=TRUE, pch=16, cex=0.5)
@@ -71,7 +71,8 @@ plot(exac_ENSP, pch=16, ,cex=( (exac_ENSP$Allele.Count-1)/200))
 text(exac_ENSP, as.character(exac_ENSP$Allele.Count), pos=3, col="grey", cex=0.8)
 
 # Create an empty grid where n is the total number of cells
-grd              <- as.data.frame(spsample(exac_ENSP, "regular", n=10000))
+#layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
+grd              <- as.data.frame(spsample(exac_ENSP, "regular", n=100000))
 names(grd)       <- c("AA_POSITION", "MUT_PRED")
 coordinates(grd) <- c("AA_POSITION", "MUT_PRED")
 gridded(grd)     <- TRUE  # Create SpatialPixel object
@@ -80,20 +81,30 @@ fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 exac_ENSP.idw <- idw(Allele.Count~1,exac_ENSP,newdata=grd,idp=3.0)
 # Plot the raster and the sampled points
 OP      <- par( mar=c(0,0,0,0))
-image(exac_ENSP.idw,"var1.pred",col=terrain.colors(20))
+image(exac_ENSP.idw,"var1.pred",col=terrain.colors(20), xlab="blash", ylab="blash")
+
+axis(1, at = exac_ENSP$AA_POSITION, labels = exac_ENSP$AA_POSITION, las =1)
+axis(2, at = exac_ENSP$MUT_PRED, labels = exac_ENSP$MUT_PRED, las = 3)
 contour(exac_ENSP.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
+box()
 plot(exac_ENSP, add=TRUE, pch=16, cex=0.5)
 text(coordinates(exac_ENSP), as.character(round(exac_ENSP$AA_POSITION,1)), pos=4, cex=0.8, col="blue")
-par(OP)
+parameters<-par(OP)
+str(OP)
+title(main="PKD2 - MutPRED- Exac", font.main =4)
+
 
 
 # Interpolate the surface using a power value of 2 (idp=2.0)
-dat.idw <- idw(Z~1,dat,newdata=grd,idp=2.0)
+
 
 # Plot the raster and the sampled points
 OP      <- par( mar=c(0,0,0,0))
-image(exac.idw,"var1.pred",col=terrain.colors(20))
-contour(dat.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
+image(exac_ENSP.idw,"var1.pred",col=terrain.colors(20), axes = TRUE)
+axis(1, at = seq(100, 800, by =100))
+axis(2, at = seq(100, 800, by =100))
+
+contour(exac_ENSP.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565", )
 plot(dat, add=TRUE, pch=16, cex=0.5)
 text(coordinates(dat), as.character(round(dat$Z,1)), pos=4, cex=0.8, col="blue")
 par(OP)
