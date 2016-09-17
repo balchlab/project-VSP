@@ -29,7 +29,7 @@ exac_ENSP$Ptein.Consequence<-gsub("p.","", as.character(exac_ENSP$amino_acid_cha
 
 #adjust prediction scores - so that the range is similar to AA coordinates
 exac_ENSP$PROVEAN_SCORE <- exac_ENSP$PROVEAN_SCORE*100
-exac_ENSP$MUT_PRED<-exac_ENSP$MUT_PRED*100
+exac_ENSP$MUT_PRED<-round(exac_ENSP$MUT_PRED*100, 0)
 exac_ENSP$MUT_PRED<-rescale(exac_ENSP$MUT_PRED, to =c(1,1000))
 
 #set max allele count to a value best suited for analysis 
@@ -58,7 +58,7 @@ fullgrid(grd_cf)    <- TRUE  # Create SpatialGrid object
 exac_CFTR.idw <- idw(Allele.Count~1,exac_CFTR,newdata=grd_cf,idp=2.0)
 
 # Plot the raster and the sampled points
-OP      <- par( mar=c(1,1,1,1))
+OP      <- par( mar=c(2,2,2,2))
 image(exac_CFTR.idw,"var1.pred",col=terrain.colors(20))
 contour(exac_CFTR.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
 plot(exac_CFTR, add=TRUE, pch=16, cex=0.5)
@@ -66,6 +66,7 @@ text(coordinates(exac_CFTR), as.character(round(exac_CFTR$AA_POSITION,1)), pos=4
 par(OP)
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
+#OP      <- par( mar=c(2,2,2,2))
 coordinates(exac_ENSP) <- c("AA_POSITION","MUT_PRED")
 plot(exac_ENSP, pch=16, ,cex=( (exac_ENSP$Allele.Count-1)/200))
 text(exac_ENSP, as.character(exac_ENSP$Allele.Count), pos=3, col="grey", cex=0.8)
@@ -80,15 +81,20 @@ fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 # Interpolate the surface using a power value of 2 (idp=2.0)
 exac_ENSP.idw <- idw(Allele.Count~1,exac_ENSP,newdata=grd,idp=3.0)
 # Plot the raster and the sampled points
-OP      <- par( mar=c(0,0,0,0))
-image(exac_ENSP.idw,"var1.pred",col=terrain.colors(20), xlab="blash", ylab="blash")
+#OP      <- par( mar=c(6,2,2,2))
+par(mar = c(4, 3, 2,4 ), mgp = c(1, 0.5, 0))
+image(exac_ENSP.idw,"var1.pred",col=terrain.colors(20), xlab="AA POSITION", ylab="MUT PRED Score", mgp = c(1, 4, 0))
 
-axis(1, at = exac_ENSP$AA_POSITION, labels = exac_ENSP$AA_POSITION, las =1)
-axis(2, at = exac_ENSP$MUT_PRED, labels = exac_ENSP$MUT_PRED, las = 3)
+axis(1, at = exac_ENSP$AA_POSITION, labels = exac_ENSP$AA_POSITION, las =1, pos=0)
+                                #round(exac_ENSP$MUT_PRED, 0)
+x.tick.number <- 10
+at <- seq(1, max(exac_ENSP$MUT_PRED), length.out=x.tick.number)
+axis(2, at = at, labels = NULL , las = 1, pos=0)
+
 contour(exac_ENSP.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
-box()
+#box()
 plot(exac_ENSP, add=TRUE, pch=16, cex=0.5)
-text(coordinates(exac_ENSP), as.character(round(exac_ENSP$AA_POSITION,1)), pos=4, cex=0.8, col="blue")
+#text(coordinates(exac_ENSP), as.character(round(exac_ENSP$AA_POSITION,1)), pos=4, cex=0.8, col="blue")
 parameters<-par(OP)
 str(OP)
 title(main="PKD2 - MutPRED- Exac", font.main =4)
