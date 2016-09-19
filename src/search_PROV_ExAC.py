@@ -9,48 +9,61 @@ from pandas import HDFStore,DataFrame
 import h5py
 
 
-# create (or open) an hdf5 file and opens in append mode
+
+#Sets protein ID to search in dataframe
+ENSP = "ENSP00000389119"
 
 
+# change directory to working with DAta
 os.chdir("../Data/")
 cwd = os.getcwd()
+#df = pd.read_csv('foo.csv', index_col=0)
 
-# def test_encoding(file_name):
-#     detector = UniversalDetector()
-#     with open(file_name, 'rb') as f:
-#         for line in f:
-#             detector.feed(line)
-#             if detector.done:
-#                  break
-#         detector.close()
-#     r = detector.result
-#     return "Detected encoding %s with confidence %s" % (r['encoding'], r['confidence'])
-
-with gzip.open('PROVEAN_scores_ensembl66_human.tsv.gz','rt') as tsvin, open('new.csv', 'wt') as csvout:
-    tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
-    csvout = csv.writer(csvout)
-
-    for row in tsvin:
-        count = row[0]
-        if count ==  "ENSP00000237596":
-            csvout.writerows([row[0:8]])
-
-#datatable=csvreader('PROVEAN_scores_ensembl66_human.tsv.gz')
-
-#print (datatable)
+def findPROVEANscores(protein_ID):
+    #read from tsv.gz file
+    with gzip.open('PROVEAN_scores_ensembl66_human.tsv.gz','rt') as tsvin, open('PROVEAN_scores.csv', 'wt') as csvout:
+        csvout = csv.writer(csvout)
+        tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
+        for i in range(1):
+            row1 = next(tsvin)
+            print(row1)
+            csvout.writerows([row1])
+            i=+1
 
 
-#PRODATA = pd.read_csv('PROVEAN_scores_ensembl66_human.tsv.gz',delimiter="\t", quoting=csv.QUOTE_NONE, encoding='utf-8-sig', nrows = 100000)
-#hdf.put('d1', PRODATA, format='table', data_columns=True)
-#PRODATA.to_hdf('PROVEAN_scores.hdf5', '/data', append=True)
+
+        for row in tsvin:
+            count = row[0]
+            if count == protein_ID:
+                csvout.writerows([row[0:23]])
 
 
-#store = HDFStore('PROVEAN.h5')
-#store['df'] = PRODATA  # save it
-#store['df']  # load it
-#with h5py.File('PROVEAN.h5', 'w') as hf:
-
-    #hf.create_dataset('d1', data = PRODATA, compression="lzf", compression_opts=9)
 
 
-#print (store.df.head())
+def combineExACtoPROVEAN(input):
+
+
+    df = (pd.read_csv(input))
+
+
+    short_df = df.drop('#protein_id',1)
+
+    short_df ['AA']=(short_df.T[0])
+
+    print(short_df)
+
+
+
+
+
+def main ():
+    #findPROVEANscores(ENSP)
+
+    combineExACtoPROVEAN('PROVEAN_scores.csv')
+
+if __name__ == '__main__':
+    main()
+
+
+
+

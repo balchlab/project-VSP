@@ -56,18 +56,18 @@ def AAconverter(Input):
         for line in lines:
             outfile.write(line)
 
-
-def Get_PROVEAN_Score():
-    os.chdir("../Data")
-    tar = tarfile.open("test.tar")
-    for member in tar.getmembers():
-        f=tar.extractfile(member)
-        content=f.read()
-        print ("%s has %d newlines" %(member, content.count("\n")))
-        print ("%s has %d spaces" % (member,content.count(" ")))
-        print ("%s has %d characters" % (member, len(content)))
-    sys.exit()
-tar.close()
+#
+# def Get_PROVEAN_Score():
+#     os.chdir("../Data")
+#     tar = tarfile.open("test.tar")
+#     for member in tar.getmembers():
+#         f=tar.extractfile(member)
+#         content=f.read()
+#         print ("%s has %d newlines" %(member, content.count("\n")))
+#         print ("%s has %d spaces" % (member,content.count(" ")))
+#         print ("%s has %d characters" % (member, len(content)))
+#     sys.exit()
+# tar.close()
 
 def filter_from_tsvs(input_dir,string):
 
