@@ -45,10 +45,10 @@ def combineExACtoPROVEAN(input):
 
     df = (pd.read_csv(input))
 
-
-    short_df = df.drop('#protein_id',1)
-
-    short_df ['AA']=(short_df.T[0])
+    short_df = df.drop(df.columns[[0,1]], axis=1)
+    short_df['AA'] =(short_df.T.idxmax())
+    short_df['position'] =df['position'].apply(str)
+    short_df['Mutation'] = short_df['AA'].astype(str) + short_df['position'].astype(str)
 
     print(short_df)
 
