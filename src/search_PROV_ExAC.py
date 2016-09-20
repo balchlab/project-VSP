@@ -11,8 +11,9 @@ import h5py
 
 
 #Sets protein ID to search in dataframe
-ENSP = "ENSP00000389119"
-
+ENSP = "ENSP00000237596"
+GENE = "PKD2"
+FILENAME = "PKD2PROVEANScores.csv"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -21,7 +22,7 @@ cwd = os.getcwd()
 
 def findPROVEANscores(protein_ID):
     #read from tsv.gz file
-    with gzip.open('PROVEAN_scores_ensembl66_human.tsv.gz','rt') as tsvin, open('PROVEAN_scores.csv', 'wt') as csvout:
+    with gzip.open('PROVEAN_scores_ensembl66_human.tsv.gz','rt') as tsvin, open(FILENAME, 'wt') as csvout:
         csvout = csv.writer(csvout)
         tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
         for i in range(1):
@@ -49,6 +50,7 @@ def combineExACtoPROVEAN(input):
     short_df['AA'] =(short_df.T.idxmax())
     short_df['position'] =df['position'].apply(str)
     short_df['Mutation'] = short_df['AA'].astype(str) + short_df['position'].astype(str)
+    df.to_csv(FILENAME, sep='\t')
 
     print(short_df)
 
@@ -57,9 +59,10 @@ def combineExACtoPROVEAN(input):
 
 
 def main ():
-    #findPROVEANscores(ENSP)
 
-    combineExACtoPROVEAN('PROVEAN_scores.csv')
+    findPROVEANscores(ENSP)
+
+    combineExACtoPROVEAN(FILENAME)
 
 if __name__ == '__main__':
     main()

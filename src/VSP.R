@@ -23,17 +23,23 @@ setwd ("D:/Balclab/projects/project-VSP/")
 
 #read data files
 exac_ENSP<-read.csv("Data/Exac_PKD2_ENSP.csv")
+PROV<-read.csv("Data/PKD2PROVEANScores.csv", sep ='')
+PROV_transformed<-reshape(PROV, idvar="position", v.names = "PROV_Scores", timevar ="Index", varying = c("A", "C", "D", "E","F", "G", "H", "I", "K", "L", "M", "N","P", "Q", "R", "S", "T", "V", "W", "Y","Del"), direction="long")
+colnames (PROV_transformed)[2] <-"AA_POSITION"
+colnames (PROV_transformed)[4] <-"PROVEAN_SCORE"
+Merged_DF_PKD2<-merge(exac_ENSP,PROV_transformed, by=c("AA_POSITION", "PROVEAN_SCORE"), all =TRUE)
+Merged_DF_PKD2[is.na(Merged_DF_PKD2)]<-0
 
 #modify amino acid notation to drop .p (ExAC format)
 exac_ENSP$Ptein.Consequence<-gsub("p.","", as.character(exac_ENSP$amino_acid_change))
 
 #adjust prediction scores - so that the range is similar to AA coordinates
-exac_ENSP$PROVEAN_SCORE <- exac_ENSP$PROVEAN_SCORE*100
+Merged_DF_PKD2$PROVEAN_SCORE <- Merged_DF_PKD2$PROVEAN_SCORE*-100
 exac_ENSP$MUT_PRED<-round(exac_ENSP$MUT_PRED*100, 0)
 exac_ENSP$MUT_PRED<-rescale(exac_ENSP$MUT_PRED, to =c(1,1000))
 
 #set max allele count to a value best suited for analysis 
-exac_ENSP$Allele.Count[exac_ENSP$Allele.Count>4]<-4
+Merged_DF_PKD2$Allele.Count[Merged_DF_PKD2$Allele.Count>5]<-5
 
 
 exac_CFTR<-read.csv("CFTR_Exac.csv")
@@ -67,37 +73,38 @@ par(OP)
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
 #OP      <- par( mar=c(2,2,2,2))
-coordinates(exac_ENSP) <- c("AA_POSITION","MUT_PRED")
-plot(exac_ENSP, pch=16, ,cex=( (exac_ENSP$Allele.Count-1)/200))
-text(exac_ENSP, as.character(exac_ENSP$Allele.Count), pos=3, col="grey", cex=0.8)
+coordinates(Merged_DF_PKD2) <- c("AA_POSITION","PROVEAN_SCORE")
+plot(Merged_DF_PKD2, pch=16, ,cex=( (Merged_DF_PKD2$Allele.Count-1)/200))
+text(Merged_DF_PKD2, as.character(Merged_DF_PKD2$Allele.Count), pos=3, col="grey", cex=0.8)
 
 # Create an empty grid where n is the total number of cells
 #layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
-grd              <- as.data.frame(spsample(exac_ENSP, "regular", n=100000))
-names(grd)       <- c("AA_POSITION", "MUT_PRED")
-coordinates(grd) <- c("AA_POSITION", "MUT_PRED")
+
+grd              <- as.data.frame(spsample(Merged_DF_PKD2, "regular", n=60000))
+names(grd)       <- c("AA_POSITION", "PROVEAN_SCORE")
+coordinates(grd) <- c("AA_POSITION", "PROVEAN_SCORE")
 gridded(grd)     <- TRUE  # Create SpatialPixel object
 fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 # Interpolate the surface using a power value of 2 (idp=2.0)
-exac_ENSP.idw <- idw(Allele.Count~1,exac_ENSP,newdata=grd,idp=3.0)
+Merged_DF_PKD2.idw <- idw(Allele.Count~1,Merged_DF_PKD2,newdata=grd,idp=3.0)
 # Plot the raster and the sampled points
 #OP      <- par( mar=c(6,2,2,2))
 par(mar = c(4, 3, 2,4 ), mgp = c(1, 0.5, 0))
-image(exac_ENSP.idw,"var1.pred",col=terrain.colors(20), xlab="AA POSITION", ylab="MUT PRED Score", mgp = c(1, 4, 0))
+image(Merged_DF_PKD2.idw,"var1.pred",col=terrain.colors(50), xlab="AA POSITION", ylab="PROVEAN", mgp = c(1, 4, 0))
 
 axis(1, at = exac_ENSP$AA_POSITION, labels = exac_ENSP$AA_POSITION, las =1, pos=0)
                                 #round(exac_ENSP$MUT_PRED, 0)
 x.tick.number <- 10
-at <- seq(1, max(exac_ENSP$MUT_PRED), length.out=x.tick.number)
+at <- seq(1, max(Merged_DF_PKD2.idw$PROVEAN_SCORE), length.out=x.tick.number)
 axis(2, at = at, labels = NULL , las = 1, pos=0)
 
-contour(exac_ENSP.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
+contour(Merged_DF_PKD2.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
 #box()
-plot(exac_ENSP, add=TRUE, pch=16, cex=0.5)
+plot(Merged_DF_PKD2, add=TRUE, pch=16, cex=0.5)
 #text(coordinates(exac_ENSP), as.character(round(exac_ENSP$AA_POSITION,1)), pos=4, cex=0.8, col="blue")
 parameters<-par(OP)
 str(OP)
-title(main="PKD2 - MutPRED- Exac", font.main =4)
+title(main="PKD2 - PROVEAN Exac", font.main =4)
 
 
 
