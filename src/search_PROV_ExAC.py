@@ -56,28 +56,35 @@ def formatPROVEAN(input):
 
     print(short_df)
 
-def mineExAC(ENSG):
+def mineExAC(SYMBOL):
 
     #read from tsv.gz file
     with gzip.open('ExAC.r0.3.1.sites.vep.table.gz','rt') as tsvin, open(FILENAME2, 'wt') as csvout:
         csvout = csv.writer(csvout)
         tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
-        print ('looking for this query: ',ENSG)
+        print ('looking for this query: ',SYMBOL)
         for i in range(1):
             row1 = next(tsvin)
             print(row1)
-            print(len(row1))
+            print('found ', len(row1), 'rows' )
+
             csvout.writerows([row1])
             i=+1
 
 
-
+        variants = 0
         for row in tsvin:
-            count = row[60]
 
-            if count == ENSG:
-                print('writing', ENSG)
+            count = row[62] #row 60 is ENSG, 62 is SYMBOL, 61 is Feature
+
+
+            if count == SYMBOL:
+                variants +=1
+                print(variants,' writing', SYMBOL, 'variant found in chromosome ', row[0])
                 csvout.writerows([row[0:len(row1)]])
+
+        print ('found ',variants, 'variants')
+
 
 
 
@@ -86,7 +93,7 @@ def main ():
     #findPROVEANscores(ENSP)
 
     #formatPROVEAN(FILENAME)
-    mineExAC(ENSG)
+    mineExAC(GENE)
 
 if __name__ == '__main__':
     main()
