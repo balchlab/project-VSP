@@ -62,18 +62,22 @@ def mineExAC(ENSG):
     with gzip.open('ExAC.r0.3.1.sites.vep.table.gz','rt') as tsvin, open(FILENAME2, 'wt') as csvout:
         csvout = csv.writer(csvout)
         tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
+        print ('looking for this query: ',ENSG)
         for i in range(1):
             row1 = next(tsvin)
             print(row1)
+            print(len(row1))
             csvout.writerows([row1])
             i=+1
 
 
 
         for row in tsvin:
-            count = row[0]
+            count = row[60]
+
             if count == ENSG:
-                csvout.writerows([row[0:23]])
+                print('writing', ENSG)
+                csvout.writerows([row[0:len(row1)]])
 
 
 
