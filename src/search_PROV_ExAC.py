@@ -20,6 +20,7 @@ FILENAME2 = "PKD2ExACScores.csv"
 FILENAME3 = "PKD2MutPredScores.csv"
 FILENAME4 = "dbNSFP_output.csv"
 UniProt = "Q13563"
+Chr = "chr4"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -120,8 +121,8 @@ def mineMutPred(S):
                 csvout.writerows([row[0:len(row1)]])
 
         print ('found ',variants , 'variant MutPred Scores')
-def mine_dbNSFP(S):
-    replacements = {
+def mine_dbNSFP(Chr, ENSG):
+    ChrFilesDict = {
         'chr1':'dbNSFP3.2c_variant.chr1',
         'chr2':'dbNSFP3.2c_variant.chr2',
         'chr3':'dbNSFP3.2c_variant.chr3',
@@ -149,15 +150,16 @@ def mine_dbNSFP(S):
         }
     #read from tsv.gz file
     with zipfile.ZipFile('dbNSFPv3.2c.zip','r') as tsvin, open(FILENAME4, 'wt') as csvout:
-        FileNames = tsvin.namelist()
-        print (len(FileNames))
-        print(FileNames)
-        df = pd.read_csv(tsvin.open('dbNSFP3.2c_variant.chr21'), delimiter='\t' , quoting=csv.QUOTE_NONE)
+
+        print (ChrFilesDict[Chr])
+        #FileNames = tsvin.namelist()
+        #print (len(FileNames))
+        #print(FileNames)
+        df = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE)
         row1 = df.iloc[0]
         print (row1)
         csvout = csv.writer(csvout)
         csvout.writerows([row1[0:len(row1)]])
-
         #FileNames = tsvin.namelist()
         #print (len(FileNames))
         #print (FileNames[1])
@@ -173,7 +175,7 @@ def main ():
     #formatPROVEAN(FILENAME)
     #mineExAC(GENE)
     #mineMutPred(UniProt)
-    mine_dbNSFP(GENE)
+    mine_dbNSFP(Chr, ENSG)
 
 if __name__ == '__main__':
     main()
