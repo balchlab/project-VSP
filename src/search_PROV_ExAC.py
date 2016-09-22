@@ -7,7 +7,7 @@ import numpy as np
 import numpy as np
 from pandas import HDFStore,DataFrame
 import h5py
-
+import zipfile
 
 
 #Sets protein ID to search in dataframe
@@ -18,6 +18,7 @@ GENE = "PKD2"
 FILENAME1 = "PKD2PROVEANScores.csv"
 FILENAME2 = "PKD2ExACScores.csv"
 FILENAME3 = "PKD2MutPredScores.csv"
+FILENAME4 = "dbNSFP_output.csv"
 UniProt = "Q13563"
 
 # change directory to working with DAta
@@ -119,6 +120,50 @@ def mineMutPred(S):
                 csvout.writerows([row[0:len(row1)]])
 
         print ('found ',variants , 'variant MutPred Scores')
+def mine_dbNSFP(S):
+    replacements = {
+        'chr1':'dbNSFP3.2c_variant.chr1',
+        'chr2':'dbNSFP3.2c_variant.chr2',
+        'chr3':'dbNSFP3.2c_variant.chr3',
+        'chr4':'dbNSFP3.2c_variant.chr4',
+        'chr5':'dbNSFP3.2c_variant.chr5',
+        'chr6':'dbNSFP3.2c_variant.chr6',
+        'chr7':'dbNSFP3.2c_variant.chr7',
+        'chr8':'dbNSFP3.2c_variant.chr8',
+        'chr9':'dbNSFP3.2c_variant.chr9',
+        'chr10':'dbNSFP3.2c_variant.chr10',
+        'chr11':'dbNSFP3.2c_variant.chr11',
+        'chr12':'dbNSFP3.2c_variant.chr12',
+        'chr13':'dbNSFP3.2c_variant.chr13',
+        'chr14':'dbNSFP3.2c_variant.chr14',
+        'chr15':'dbNSFP3.2c_variant.chr15',
+        'chr16':'dbNSFP3.2c_variant.chr16',
+        'chr17':'dbNSFP3.2c_variant.chr17',
+        'chr18':'dbNSFP3.2c_variant.chr18',
+        'chr19':'dbNSFP3.2c_variant.chr19',
+        'chr20':'dbNSFP3.2c_variant.chr20',
+        'chr21':'dbNSFP3.2c_variant.chr21',
+        'chr22':'dbNSFP3.2c_variant.chr19',
+        'chr23':'dbNSFP3.2c_variant.chrX',
+        'chr24':'dbNSFP3.2c_variant.chrM',
+        }
+    #read from tsv.gz file
+    with zipfile.ZipFile('dbNSFPv3.2c.zip','r') as tsvin, open(FILENAME4, 'wt') as csvout:
+        FileNames = tsvin.namelist()
+        print (len(FileNames))
+        print(FileNames)
+        df = pd.read_csv(tsvin.open('dbNSFP3.2c_variant.chr21'), delimiter='\t' , quoting=csv.QUOTE_NONE)
+        row1 = df.iloc[0]
+        print (row1)
+        csvout = csv.writer(csvout)
+        csvout.writerows([row1[0:len(row1)]])
+
+        #FileNames = tsvin.namelist()
+        #print (len(FileNames))
+        #print (FileNames[1])
+        #NewFile = open(FileNames[1], rt)
+        #data = pd.read_csv('dbNSFP3.2c_variant.chr1', sep=" ", header = None)
+        #First = pd.read_table('dbNSFP3.2c_variant.chr1' )#, delimiter='\t')#, quoting=csv.QUOTE_NONE)
 
 
 def main ():
@@ -127,7 +172,8 @@ def main ():
 
     #formatPROVEAN(FILENAME)
     #mineExAC(GENE)
-    mineMutPred(UniProt)
+    #mineMutPred(UniProt)
+    mine_dbNSFP(GENE)
 
 if __name__ == '__main__':
     main()
