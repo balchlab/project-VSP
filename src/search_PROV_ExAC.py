@@ -12,7 +12,7 @@ import zipfile
 
 #Sets protein ID to search in dataframe
 ENSP = "ENSP00000237596"
-ENSG = "ENSG00000118762"
+ENSG = "ENSG00000186868"
 ENST = "ENST00000237596"
 GENE = "PKD2"
 FILENAME1 = "PKD2PROVEANScores.csv"
@@ -20,7 +20,7 @@ FILENAME2 = "PKD2ExACScores.csv"
 FILENAME3 = "PKD2MutPredScores.csv"
 FILENAME4 = "dbNSFP_output.csv"
 UniProt = "Q13563"
-Chr = "chr4"
+Chr = "chr17"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -126,7 +126,7 @@ def mine_dbNSFP(Chr, ENSG):
         'chr1':'dbNSFP3.2c_variant.chr1',
         'chr2':'dbNSFP3.2c_variant.chr2',
         'chr3':'dbNSFP3.2c_variant.chr3',
-        'chr4':'dbNSFP3.2c_variant.chr4',
+        'chr4':'dbNSFP3.2c_variant.chr4', #ENSG is row 19"
         'chr5':'dbNSFP3.2c_variant.chr5',
         'chr6':'dbNSFP3.2c_variant.chr6',
         'chr7':'dbNSFP3.2c_variant.chr7',
@@ -157,15 +157,22 @@ def mine_dbNSFP(Chr, ENSG):
         #print(FileNames)
         df = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE)
         row1 = df.iloc[0]
-        print (row1)
-        csvout = csv.writer(csvout)
-        csvout.writerows([row1[0:len(row1)]])
-        #FileNames = tsvin.namelist()
-        #print (len(FileNames))
-        #print (FileNames[1])
-        #NewFile = open(FileNames[1], rt)
-        #data = pd.read_csv('dbNSFP3.2c_variant.chr1', sep=" ", header = None)
-        #First = pd.read_table('dbNSFP3.2c_variant.chr1' )#, delimiter='\t')#, quoting=csv.QUOTE_NONE)
+        #print (row1)
+        #csvout = csv.writer(csvout)
+        #csvout.writerows([row1[0:len(row1)]])
+
+        print ('looking for this query: ',ENSG)
+
+        variants = 0
+        for row in df:
+
+
+            count = row[19]
+            #print (row[1],S)
+            if count == ENSG:
+                variants +=1
+                print(variants,' writing', ENSG, 'variant scores ', row[0])
+                csvout.writerows([row[0:len(row1)]])
 
 
 def main ():
