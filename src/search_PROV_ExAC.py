@@ -13,9 +13,12 @@ import h5py
 #Sets protein ID to search in dataframe
 ENSP = "ENSP00000237596"
 ENSG = "ENSG00000118762"
+ENST = "ENST00000237596"
 GENE = "PKD2"
 FILENAME1 = "PKD2PROVEANScores.csv"
 FILENAME2 = "PKD2ExACScores.csv"
+FILENAME3 = "PKD2MutPredScores.csv"
+UniProt = "Q13563"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -28,6 +31,7 @@ def findPROVEANscores(protein_ID):
         csvout = csv.writer(csvout)
         tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
         for i in range(1):
+
             row1 = next(tsvin)
             print(row1)
             csvout.writerows([row1])
@@ -36,6 +40,7 @@ def findPROVEANscores(protein_ID):
 
 
         for row in tsvin:
+
             count = row[0]
             if count == protein_ID:
                 csvout.writerows([row[0:23]])
@@ -85,7 +90,35 @@ def mineExAC(SYMBOL):
 
         print ('found ',variants, 'variants')
 
+def mineMutPred(S):
 
+    #read from tsv.gz file
+    with gzip.open('MutPred.txt.gz','rt') as tsvin, open(FILENAME3, 'wt') as csvout:
+
+        csvout = csv.writer(csvout)
+        tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
+        print ('looking for this query: ',S)
+        for i in range(1):
+            row1 = next(tsvin)
+            print(row1)
+            print('found ', len(row1), 'rows' )
+
+            csvout.writerows([row1])
+            i=+1
+
+
+        variants = 0
+        for row in tsvin:
+
+
+            count = row[1]
+            #print (row[1],S)
+            if count == S:
+                variants +=1
+                print(variants,' writing', S, 'variant scores ', row[0])
+                csvout.writerows([row[0:len(row1)]])
+
+        print ('found ',variants , 'variant MutPred Scores')
 
 
 def main ():
@@ -93,7 +126,8 @@ def main ():
     #findPROVEANscores(ENSP)
 
     #formatPROVEAN(FILENAME)
-    mineExAC(GENE)
+    #mineExAC(GENE)
+    mineMutPred(UniProt)
 
 if __name__ == '__main__':
     main()
