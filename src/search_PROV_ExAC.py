@@ -11,7 +11,7 @@ import zipfile
 import odo
 
 #Sets protein ID to search in dataframe
-ENSP = "ENSP00000237596" #Diagnostic - beginning of Chr17
+ENSP = "ENSP00000237596"
 ENSG = "ENSG00000186868" #MAPT
 #ENSG = "ENSG00000272636" #Diagnostic - beginning of Chr17
 ENST = "ENST00000237596"
@@ -20,50 +20,37 @@ FILENAME1 = "PKD2PROVEANScores.csv"
 FILENAME2 = "PKD2ExACScores.csv"
 FILENAME3 = "PKD2MutPredScores.csv"
 FILENAME4 = "dbNSFP_output.csv"
+FILENAME5 = "dbNSFP_extract.csv"
 UniProt = "Q13563"
 Chr = "chr17"
-
 # change directory to working with DAta
 os.chdir("../Data/")
 cwd = os.getcwd()
 #df = pd.read_csv('foo.csv', index_col=0)
-
 def findPROVEANscores(protein_ID):
     #read from tsv.gz file
     with gzip.open('PROVEAN_scores_ensembl66_human.tsv.gz','rt') as tsvin, open(FILENAME1, 'wt') as csvout:
         csvout = csv.writer(csvout)
         tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
         for i in range(1):
-
             row1 = next(tsvin)
             print(row1)
             csvout.writerows([row1])
             i=+1
-
-
-
         for row in tsvin:
 
             count = row[0]
             if count == protein_ID:
                 csvout.writerows([row[0:23]])
 
-
-
-
 def formatPROVEAN(input):
-
-
     df = (pd.read_csv(input))
-
     short_df = df.drop(df.columns[[0,1]], axis=1)
     short_df['AA'] =(short_df.T.idxmax())
     short_df['position'] =df['position'].apply(str)
     short_df['Mutation'] = short_df['AA'].astype(str) + short_df['position'].astype(str)
     df.to_csv(FILENAME, sep='\t')
-
     print(short_df)
-
 def mineExAC(SYMBOL):
 
     #read from tsv.gz file
@@ -75,24 +62,17 @@ def mineExAC(SYMBOL):
             row1 = next(tsvin)
             print(row1)
             print('found ', len(row1), 'rows' )
-
             csvout.writerows([row1])
             i=+1
-
-
         variants = 0
         for row in tsvin:
 
             count = row[62] #row 60 is ENSG, 62 is SYMBOL, 61 is Feature
-
-
             if count == SYMBOL:
                 variants +=1
                 print(variants,' writing', SYMBOL, 'variant found in chromosome ', row[0])
                 csvout.writerows([row[0:len(row1)]])
-
         print ('found ',variants, 'variants')
-
 def mineMutPred(S):
 
     #read from tsv.gz file
@@ -105,17 +85,11 @@ def mineMutPred(S):
             row1 = next(tsvin)
             print(row1)
             print('found ', len(row1), 'rows' )
-
             csvout.writerows([row1])
             i=+1
-
-
         variants = 0
         for row in tsvin:
-
-
             count = row[1]
-            #print (row[1],S)
             if count == S:
                 variants +=1
                 print(variants,' writing', S, 'variant scores ', row[0])
@@ -152,60 +126,37 @@ def mine_dbNSFP(Chr, ENSG):
     with zipfile.ZipFile('dbNSFPv3.2c.zip','r') as tsvin, open(FILENAME4, 'wt') as csvout:
         tp = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE, iterator = True,  dtype=object, chunksize = 40)# header = None)
         writer = csv.writer(csvout)
-        #row1 = next(tp.iterrows(0))
-
         for i in range(1):
             row1 = next(tp)
             print(row1)
             print('found ', len(row1), 'rows' )
             writer.writerows([row1[1:len(row1)]])
-            #csvout.writerows([row1])
             i=+1
-
         print (ChrFilesDict[Chr])
-        #FileNames = tsvin.namelist()
-        #print (len(FileNames))
-        #print(FileNames)
-
 
         variants = 0
         for chunk in tp:
             row = next(chunk.itertuples())
             count = row[20]
             #print (row[1:len(row)])
-
             if count == ENSG:
                 variants +=1
                 print(variants,' writing', ENSG, 'variant scores ', row[0])
-
                 writer.writerows([row[1:len(row)]])
         print (variants)
 
+def extract_dbNSFP(file):
 
-
-
-
-
-        #
-        # for chunk in odo(tp, chunk(pd.DataFrame), chunksize = 100): print (chunk)
-        #variants = 0
-        #for chunk in tp:
-            #print (chunk[0])
-            #Data =
-
-        #     for row in chunk:
-        #         print (row[19])
-        #         count = row[19]
-        #         print (row[1],S)
-        #         if count == ENSG:
-        #             variants +=1
-        #             print(variants,' writing', ENSG, 'variant scores ', row[0])
-        #             csvout.writerows([row[0:len(row1)]])
-        #
-        # print (variants)
-        # csvout = csv.writer(csvout)
-
-
+    with open(file,'rt') as tsvin, open(FILENAME5, 'wt') as csvout:
+        dict = []
+        df = pd.read_csv(tsvin, delimiter ='\t')
+        print (df)
+        for i in range(5):
+            row = next(df)
+            print (row)
+            dict.append(row)
+            i+=1
+        print(dict)
 
 def main ():
 
@@ -214,8 +165,8 @@ def main ():
     #formatPROVEAN(FILENAME)
     #mineExAC(GENE)
     #mineMutPred(UniProt)
-    mine_dbNSFP(Chr, ENSG)
-
+    #mine_dbNSFP(Chr, ENSG)
+    extract_dbNSFP(FILENAME4)
 if __name__ == '__main__':
     main()
 
