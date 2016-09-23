@@ -11,8 +11,9 @@ import zipfile
 import odo
 
 #Sets protein ID to search in dataframe
-ENSP = "ENSP00000237596"
-ENSG = "ENSG00000186868"
+ENSP = "ENSP00000237596" #Diagnostic - beginning of Chr17
+ENSG = "ENSG00000186868" #MAPT
+#ENSG = "ENSG00000272636" #Diagnostic - beginning of Chr17
 ENST = "ENST00000237596"
 GENE = "PKD2"
 FILENAME1 = "PKD2PROVEANScores.csv"
@@ -20,7 +21,7 @@ FILENAME2 = "PKD2ExACScores.csv"
 FILENAME3 = "PKD2MutPredScores.csv"
 FILENAME4 = "dbNSFP_output.csv"
 UniProt = "Q13563"
-Chr = "chrM"
+Chr = "chr17"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -149,31 +150,35 @@ def mine_dbNSFP(Chr, ENSG):
         }
     #read from tsv.gz file
     with zipfile.ZipFile('dbNSFPv3.2c.zip','r') as tsvin, open(FILENAME4, 'wt') as csvout:
+        tp = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE, iterator = True,  dtype=object, chunksize = 40)# header = None)
+        writer = csv.writer(csvout)
+        #row1 = next(tp.iterrows(0))
+
+        for i in range(1):
+            row1 = next(tp)
+            print(row1)
+            print('found ', len(row1), 'rows' )
+            writer.writerows([row1[1:len(row1)]])
+            #csvout.writerows([row1])
+            i=+1
 
         print (ChrFilesDict[Chr])
         #FileNames = tsvin.namelist()
         #print (len(FileNames))
         #print(FileNames)
-        tp = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE)# iterator = True,  dtype=object)
 
-        def iterrows (tp, chunksize):
-            n = len(tp.index)
-            i = 0
-            while (i<n):
-                slice = tp[i: i+chunksize]
-                for row in slice:
-                    yield(row)
-                i+= chunksize
-        colOne=tp.columns.tolist()
-        print (colOne)
-        for row in iterrows (tp, 10):
-             print (row[0:10])
-             count = row[0]
-             print (row[0],ENSG)
-             if count == ENSG:
+
+        variants = 0
+        for chunk in tp:
+            row = next(chunk.itertuples())
+            count = row[20]
+            #print (row[1:len(row)])
+
+            if count == ENSG:
                 variants +=1
                 print(variants,' writing', ENSG, 'variant scores ', row[0])
-                csvout.writerows([row[0:len(row1)]])
+
+                writer.writerows([row[1:len(row)]])
         print (variants)
 
 
