@@ -8,7 +8,7 @@ import numpy as np
 from pandas import HDFStore,DataFrame
 import h5py
 import zipfile
-
+import odo
 
 #Sets protein ID to search in dataframe
 ENSP = "ENSP00000237596"
@@ -20,7 +20,7 @@ FILENAME2 = "PKD2ExACScores.csv"
 FILENAME3 = "PKD2MutPredScores.csv"
 FILENAME4 = "dbNSFP_output.csv"
 UniProt = "Q13563"
-Chr = "chr17"
+Chr = "chrM"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -144,9 +144,8 @@ def mine_dbNSFP(Chr, ENSG):
         'chr19':'dbNSFP3.2c_variant.chr19',
         'chr20':'dbNSFP3.2c_variant.chr20',
         'chr21':'dbNSFP3.2c_variant.chr21',
-        'chr22':'dbNSFP3.2c_variant.chr19',
-        'chr23':'dbNSFP3.2c_variant.chrX',
-        'chr24':'dbNSFP3.2c_variant.chrM',
+        'chrX':'dbNSFP3.2c_variant.chrX',
+        'chrM':'dbNSFP3.2c_variant.chrM',
         }
     #read from tsv.gz file
     with zipfile.ZipFile('dbNSFPv3.2c.zip','r') as tsvin, open(FILENAME4, 'wt') as csvout:
@@ -155,24 +154,52 @@ def mine_dbNSFP(Chr, ENSG):
         #FileNames = tsvin.namelist()
         #print (len(FileNames))
         #print(FileNames)
-        df = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE)
-        row1 = df.iloc[0]
-        #print (row1)
-        #csvout = csv.writer(csvout)
-        #csvout.writerows([row1[0:len(row1)]])
+        tp = pd.read_csv(tsvin.open(ChrFilesDict[Chr]), delimiter='\t' , quoting=csv.QUOTE_NONE)# iterator = True,  dtype=object)
 
-        print ('looking for this query: ',ENSG)
-
-        variants = 0
-        for row in df:
-
-
-            count = row[19]
-            #print (row[1],S)
-            if count == ENSG:
+        def iterrows (tp, chunksize):
+            n = len(tp.index)
+            i = 0
+            while (i<n):
+                slice = tp[i: i+chunksize]
+                for row in slice:
+                    yield(row)
+                i+= chunksize
+        colOne=tp.columns.tolist()
+        print (colOne)
+        for row in iterrows (tp, 10):
+             print (row[0:10])
+             count = row[0]
+             print (row[0],ENSG)
+             if count == ENSG:
                 variants +=1
                 print(variants,' writing', ENSG, 'variant scores ', row[0])
                 csvout.writerows([row[0:len(row1)]])
+        print (variants)
+
+
+
+
+
+
+        #
+        # for chunk in odo(tp, chunk(pd.DataFrame), chunksize = 100): print (chunk)
+        #variants = 0
+        #for chunk in tp:
+            #print (chunk[0])
+            #Data =
+
+        #     for row in chunk:
+        #         print (row[19])
+        #         count = row[19]
+        #         print (row[1],S)
+        #         if count == ENSG:
+        #             variants +=1
+        #             print(variants,' writing', ENSG, 'variant scores ', row[0])
+        #             csvout.writerows([row[0:len(row1)]])
+        #
+        # print (variants)
+        # csvout = csv.writer(csvout)
+
 
 
 def main ():
