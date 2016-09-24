@@ -10,24 +10,28 @@ import h5py
 import zipfile
 import odo
 
+
+VCF_HEADER = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
 #Sets protein ID to search in dataframe
-ENSP = "ENSP00000237596"
-ENSG = "ENSG00000186868" #MAPT
+ENSP = "ENSP00000003084"
+ENSG = "ENSG00000001626"
+#ENSG = "ENSG00000186868" #MAPT
 #ENSG = "ENSG00000272636" #Diagnostic - beginning of Chr17
-ENST = "ENST00000237596"
-GENE = "PKD2"
-FILENAME1 = "PKD2PROVEANScores.csv"
-FILENAME2 = "PKD2ExACScores.csv"
-FILENAME3 = "PKD2MutPredScores.csv"
+ENST = "ENST00000003084"
+GENE = "CFTR"
+FILENAME = "CFTR_PROV_extract.csv"
+FILENAME1 = "CFTR_PROVEANScores.csv"
+FILENAME2 = "CFTR_ExACScores.csv"
+FILENAME3 = "CFTR_MutPredScores.csv"
 FILENAME4 = "dbNSFP_output.csv"
 FILENAME5 = "dbNSFP_extract.csv"
-UniProt = "Q13563"
-Chr = "chr17"
+UniProt = "P13569"
+Chr = "7"
 # change directory to working with DAta
 os.chdir("../Data/")
 cwd = os.getcwd()
 #df = pd.read_csv('foo.csv', index_col=0)
-def findPROVEANscores(protein_ID):
+def findPROVEANscores(ENSP):
     #read from tsv.gz file
     with gzip.open('PROVEAN_scores_ensembl66_human.tsv.gz','rt') as tsvin, open(FILENAME1, 'wt') as csvout:
         csvout = csv.writer(csvout)
@@ -38,9 +42,9 @@ def findPROVEANscores(protein_ID):
             csvout.writerows([row1])
             i=+1
         for row in tsvin:
-
             count = row[0]
-            if count == protein_ID:
+            #print (count, ENSP)
+            if count == ENSP:
                 csvout.writerows([row[0:23]])
 
 def formatPROVEAN(input):
@@ -51,36 +55,51 @@ def formatPROVEAN(input):
     short_df['Mutation'] = short_df['AA'].astype(str) + short_df['position'].astype(str)
     df.to_csv(FILENAME, sep='\t')
     print(short_df)
+
 def mineExAC(SYMBOL):
+    print("Open")
 
     #read from tsv.gz file
-    with gzip.open('ExAC.r0.3.1.sites.vep.table.gz','rt') as tsvin, open(FILENAME2, 'wt') as csvout:
+    with gzip.open('ExAC.r0.3.1.sites.vep.vcf.gz','rt') as tsvin, open(FILENAME2, 'wt') as csvout:
+        print("open")
+        comments = count_comments(tsvin)
         csvout = csv.writer(csvout)
-        tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
+        tsvin = pd.read_table(tsvin,  skiprows=comments, iterator =True, chunksize=40)#, names=VCF_HEADER, usecols=range(8)) #delimiter='|',quoting=csv.QUOTE_NONE, skiprows = comments)
         print ('looking for this query: ',SYMBOL)
-        for i in range(1):
-            row1 = next(tsvin)
-            print(row1)
-            print('found ', len(row1), 'rows' )
-            csvout.writerows([row1])
-            i=+1
-        variants = 0
-        for row in tsvin:
+        for line in tsvin:
+            if line.startswith('#'):
+                continue
+            else:
+                yield parse(line)
 
-            count = row[62] #row 60 is ENSG, 62 is SYMBOL, 61 is Feature
-            if count == SYMBOL:
-                variants +=1
-                print(variants,' writing', SYMBOL, 'variant found in chromosome ', row[0])
-                csvout.writerows([row[0:len(row1)]])
-        print ('found ',variants, 'variants')
-def mineMutPred(S):
 
+
+        # for i in range(1):
+        #     row1 = next(tsvin)
+        #     print (len(row1))
+        #     print (row1)
+        #     csvout.writerows([row1])
+        #     i=+1
+        # variants = 0
+        #
+        # for chunk in tsvin:
+        #     row = next(chunk.itertuples())
+        #     count = row[0]
+        #
+        #     #print (count)
+        #     if count == SYMBOL:
+        #         variants +=1
+        #         print(variants,' writing', SYMBOL, 'variant found in chromosome ', row[0])
+        #         csvout.writerows([row[0:len(row1)]])
+        # print ('found ',variants, 'variants')
+def mineMutPred(ENST, UniProt):
+    #TODO: Have to search both ENST and UniPROT codes in same query
     #read from tsv.gz file
     with gzip.open('MutPred.txt.gz','rt') as tsvin, open(FILENAME3, 'wt') as csvout:
 
         csvout = csv.writer(csvout)
         tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
-        print ('looking for this query: ',S)
+        print ('looking for this query: ',ENST, UniProt)
         for i in range(1):
             row1 = next(tsvin)
             print(row1)
@@ -90,7 +109,8 @@ def mineMutPred(S):
         variants = 0
         for row in tsvin:
             count = row[1]
-            if count == S:
+            #print(count,ENST, UniProt)
+            if count == ENST or count == UniProt:
                 variants +=1
                 print(variants,' writing', S, 'variant scores ', row[0])
                 csvout.writerows([row[0:len(row1)]])
@@ -158,15 +178,67 @@ def extract_dbNSFP(file):
             i+=1
         print(dict)
 
+def count_comments(filename):
+    """Count comment lines (those that start with "#") in an optionally
+    gzipped file.
+    :param filename:  An optionally gzipped file.
+    https://gist.github.com/slowkow/6215557
+    """
+    comments = 0
+    print("comm")
+    #fn_open = gzip.open if filename.endswith('.gz') else open
+    #with fn_open(filename) as fh:
+    for line in filename:
+        if line.startswith('#'):
+            comments += 1
+            print("YES")
+        else:
+            print ("no")
+            break
+    print (comments)
+    return comments
+
+def parse(line):
+    """Parse a single VCF line and return an OrderedDict.
+    https://gist.github.com/slowkow/6215557
+    """
+    result = OrderedDict()
+
+    fields = line.rstrip().split('\t')
+
+    # Read the values in the first seven columns.
+    for i, col in enumerate(VCF_HEADER[:7]):
+        result[col] = _get_value(fields[i])
+
+    # INFO field consists of "key1=value;key2=value;...".
+    infos = fields[7].split(';')
+
+    for i, info in enumerate(infos, 1):
+        # info should be "key=value".
+        try:
+            key, value = info.split('=')
+        # But sometimes it is just "value", so we'll make our own key.
+        except ValueError:
+            key = 'INFO{}'.format(i)
+            value = info
+        # Set the value to None if there is no value.
+        result[key] = _get_value(value)
+
+    return result
+
+
 def main ():
 
     #findPROVEANscores(ENSP)
-
     #formatPROVEAN(FILENAME)
-    #mineExAC(GENE)
-    #mineMutPred(UniProt)
+    mineExAC(ENST)
+
+    #mineMutPred(UniProt,ENST)
     #mine_dbNSFP(Chr, ENSG)
-    extract_dbNSFP(FILENAME4)
+    #extract_dbNSFP(FILENAME4)
+
+
+
 if __name__ == '__main__':
     main()
 
