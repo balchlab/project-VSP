@@ -9,9 +9,13 @@ from pandas import HDFStore,DataFrame
 import h5py
 import zipfile
 import odo
+from collections import OrderedDict
+
 
 
 VCF_HEADER = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
+
+
 #Sets protein ID to search in dataframe
 ENSP = "ENSP00000003084"
 ENSG = "ENSG00000001626"
@@ -63,35 +67,40 @@ def mineExAC(SYMBOL):
     with gzip.open('ExAC.r0.3.1.sites.vep.vcf.gz','rt') as tsvin, open(FILENAME2, 'wt') as csvout:
         print("open")
         comments = count_comments(tsvin)
+        result = OrderedDict()
         csvout = csv.writer(csvout)
-        tsvin = pd.read_table(tsvin,  skiprows=comments, iterator =True, chunksize=40)#, names=VCF_HEADER, usecols=range(8)) #delimiter='|',quoting=csv.QUOTE_NONE, skiprows = comments)
+        tsvin = pd.read_table(tsvin,  skiprows=comments,  names=VCF_HEADER, usecols=range(8))  #delimiter='|',quoting=csv.QUOTE_NONE, skiprows = comments)
         print ('looking for this query: ',SYMBOL)
-        for line in tsvin:
-            if line.startswith('#'):
-                continue
-            else:
-                parse(line)
+
+        for i, line in enumerate(lines(tsvin)):
+            for key in line.keys():
+                if key not in result:
+                    result[key] = [None] * i
+
+            for key in result.keys():
+                result[key].append(line.get(key, None))
+
+        return pd.DataFrame(result)
 
 
 
-        # for i in range(1):
+
+        # for i in range (1):
         #     row1 = next(tsvin)
-        #     print (len(row1))
         #     print (row1)
+        #     print ('found', len(row1), 'rows')
         #     csvout.writerows([row1])
-        #     i=+1
-        # variants = 0
+        #     i+=1
+
+
+
+        # for line in tsvin:
         #
-        # for chunk in tsvin:
-        #     row = next(chunk.itertuples())
-        #     count = row[0]
-        #
-        #     #print (count)
-        #     if count == SYMBOL:
-        #         variants +=1
-        #         print(variants,' writing', SYMBOL, 'variant found in chromosome ', row[0])
-        #         csvout.writerows([row[0:len(row1)]])
-        # print ('found ',variants, 'variants')
+        #     if line.startswith('#'):
+        #         continue
+        #     else:
+        #         parse(line)
+
 def mineMutPred(ENST, UniProt):
     #TODO: Have to search both ENST and UniPROT codes in same query
     #read from tsv.gz file
@@ -191,9 +200,9 @@ def count_comments(filename):
     for line in filename:
         if line.startswith('#'):
             comments += 1
-            print("YES")
+            print(line)
         else:
-            print ("no")
+            print ("no more")
             break
     print (comments)
     return comments
@@ -223,17 +232,30 @@ def parse(line):
             value = info
         # Set the value to None if there is no value.
         result[key] = _get_value(value)
-
+    print (result)
     return result
 
+def lines(filename):
+    """Open an optionally gzipped VCF file and generate an OrderedDict for
+    each line.
+    https://gist.github.com/slowkow/6215557
+    """
+    fn_open = gzip.open if filename.endswith('.gz') else open
+
+    with fn_open(filename) as fh:
+        for line in fh:
+            if line.startswith('#'):
+                continue
+            else:
+                yield parse(line)
 
 def main ():
 
     #findPROVEANscores(ENSP)
     #formatPROVEAN(FILENAME)
-    #mineExAC(ENST)
+    mineExAC(ENST)
 
-    mineMutPred(UniProt,ENST)
+    #mineMutPred(UniProt,ENST)
     #mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
 
