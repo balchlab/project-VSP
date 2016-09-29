@@ -60,7 +60,7 @@ def formatPROVEAN(input):
     df.to_csv(FILENAME, sep='\t')
     print(short_df)
 
-def mineExAC(SYMBOL):
+def dataframeExAC(SYMBOL):
     print("Open")
 
     #read from tsv.gz file
@@ -81,6 +81,10 @@ def mineExAC(SYMBOL):
                 result[key].append(line.get(key, None))
 
         return pd.DataFrame(result)
+
+def generatorExAC (filename, Chr):
+    print('searching Chrom:', Chr, 'in file: ',filename)
+    lines(filename, Chr)
 
 
 
@@ -235,25 +239,44 @@ def parse(line):
     print (result)
     return result
 
-def lines(filename):
+def lines(filename, Chr):
     """Open an optionally gzipped VCF file and generate an OrderedDict for
     each line.
     https://gist.github.com/slowkow/6215557
     """
+    print('opening')
     fn_open = gzip.open if filename.endswith('.gz') else open
 
-    with fn_open(filename) as fh:
+    with fn_open(filename, 'rt') as fh:
+        print ('opened file')
         for line in fh:
             if line.startswith('#'):
                 continue
             else:
-                yield parse(line)
+                if line. startswith (Chr):
+                    print('Searching chromosome ', Chr)
+                    yield parse(line)
+
+
+def _get_value(value):
+    """Interpret null values and return ``None``. Return a list if the value
+    contains a comma.
+    """
+    if not value or value in ['', '.', 'NA']:
+        return None
+    if ',' in value:
+        return value.split(',')
+    return value
+
+
 
 def main ():
 
     #findPROVEANscores(ENSP)
     #formatPROVEAN(FILENAME)
-    mineExAC(ENST)
+    #mineExAC(ENST, Chr)
+    variants = lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+    print (next(variants))
 
     #mineMutPred(UniProt,ENST)
     #mine_dbNSFP(Chr, ENSG)
