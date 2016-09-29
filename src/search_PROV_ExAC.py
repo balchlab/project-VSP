@@ -10,6 +10,7 @@ import h5py
 import zipfile
 import odo
 from collections import OrderedDict
+import collections
 
 
 
@@ -22,6 +23,7 @@ ENSG = "ENSG00000001626"
 #ENSG = "ENSG00000186868" #MAPT
 #ENSG = "ENSG00000272636" #Diagnostic - beginning of Chr17
 ENST = "ENST00000003084"
+
 GENE = "CFTR"
 FILENAME = "CFTR_PROV_extract.csv"
 FILENAME1 = "CFTR_PROVEANScores.csv"
@@ -236,7 +238,7 @@ def parse(line):
             value = info
         # Set the value to None if there is no value.
         result[key] = _get_value(value)
-    print (result)
+
     return result
 
 def lines(filename, Chr):
@@ -246,16 +248,29 @@ def lines(filename, Chr):
     """
     print('opening')
     fn_open = gzip.open if filename.endswith('.gz') else open
-
+    df =DataFrame()
     with fn_open(filename, 'rt') as fh:
-        print ('opened file')
+        print ('opened file', filename)
         for line in fh:
-            if line.startswith('#'):
-                continue
+            # if line.startswith('#'):
+            #     print ('skipping comment')
+            #     continue
+            # print('looking for chromosome ', Chr)
+            if line[0]==Chr:
+                #print('Searching within chromosome ', Chr)
+
+                query=parse(line)['CSQ']
+                if any(ENST in s for s in query):
+                    print (query)
+
+
+
+
             else:
-                if line. startswith (Chr):
-                    print('Searching chromosome ', Chr)
-                    yield parse(line)
+                continue
+
+
+
 
 
 def _get_value(value):
