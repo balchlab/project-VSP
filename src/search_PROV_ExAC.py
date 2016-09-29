@@ -70,7 +70,7 @@ def mineExAC(SYMBOL):
             if line.startswith('#'):
                 continue
             else:
-                yield parse(line)
+                parse(line)
 
 
 
@@ -231,9 +231,9 @@ def main ():
 
     #findPROVEANscores(ENSP)
     #formatPROVEAN(FILENAME)
-    mineExAC(ENST)
+    #mineExAC(ENST)
 
-    #mineMutPred(UniProt,ENST)
+    mineMutPred(UniProt,ENST)
     #mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
 
