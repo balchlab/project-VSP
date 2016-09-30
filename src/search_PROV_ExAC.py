@@ -252,7 +252,7 @@ def lines(filename, Chr):
 
     print('opening file')
     fn_open = gzip.open if filename.endswith('.gz') else open
-    df =DataFrame()
+
     with fn_open(filename, 'rt') as fh, open('Exac_parse_OUT.csv', 'w') as csvout:
         a = csv.writer (csvout)
         print ('opened file', filename)
@@ -263,10 +263,17 @@ def lines(filename, Chr):
         printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
         for line in fh:
 
+
+
             if line.startswith('#'):
-                 #print ('skipping comment')
-                 continue
-            #print('looking for chromosome ', Chr, 'currently on', line[0])
+                continue
+
+            i = int(line[0])
+            printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
+
+
+            if line[0]<Chr:
+                continue
 
             if line[0]==Chr:
                 #print('Searching within chromosome ', Chr)
@@ -292,8 +299,7 @@ def lines(filename, Chr):
                 break
 
 
-            i = int(line[0])
-            printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
+
 
 
 
@@ -343,8 +349,8 @@ def main ():
     #findPROVEANscores(ENSP)
     #formatPROVEAN(FILENAME)
     #mineExAC(ENST, Chr)
-    variants = lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
-    print (next(variants))
+    lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+    #next(variants)
 
     #mineMutPred(UniProt,ENST)
     #mine_dbNSFP(Chr, ENSG)
