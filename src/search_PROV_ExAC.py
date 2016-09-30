@@ -19,7 +19,7 @@ import odo
 from collections import OrderedDict
 import collections
 from time import sleep
-
+import string
 
 
 VCF_HEADER = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
@@ -272,18 +272,17 @@ def lines(filename, Chr):
         for good_line in find_good_lines(fh):
 
             #print('Searching within chromosome ', Chr)
-            query=parse(good_line)['CSQ']
+            query=parse(good_line)#['CSQ']
 
             #strip first row, dont need that data
             #query = query[1]
 
+            print (query)
             #search for protein coding variants for POI
-            if any(ENSP in s for s in query):
+            if any(ENST in s for s in query):
+                #print (query)
 
-                query2=query
-                if any('protein_coding' in s for s in query2):
-                    print (query2)
-                    a.writerows([x.split('|') for x in query2])
+                a.writerows([x.split('|') for x in query])
 
 def find_good_lines(fh):
 
@@ -309,6 +308,28 @@ def _get_value(value):
     if ',' in value:
         return value.split(',')
     return value
+
+def filterExACoutput(file):
+    print('reading file')
+    df = pd.read_csv(file)
+    col_names = []
+
+    col_names = [i for i in string.printable[:len(df.columns)]]
+    df.columns = [c.rstrip() for c in df.columns]
+    print (col_names)
+    df.columns = [col_names]
+    #df[1] = [col_names[1].astype(str)]
+    #df[]
+
+
+    print ('done')
+    df = df[df['1']=="missense_variant"]
+    df = df[df['3']==GENE]
+    df = df[df['6']==ENST]
+    df.to_csv('Filtered_Exac_OUT.csv')
+
+    print (df.head())
+
 
 # Print iterations progress
 def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1, barLength = 100):
@@ -336,9 +357,13 @@ def main ():
 
     #findPROVEANscores(ENSP)
     #formatPROVEAN(FILENAME)
+
     #mineExAC(ENST, Chr)
+
     lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
-    #next(variants)
+
+    #filterExACoutput('Exac_parse_OUT.csv')
+
 
     #mineMutPred(UniProt,ENST)
     #mine_dbNSFP(Chr, ENSG)
