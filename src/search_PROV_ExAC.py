@@ -11,6 +11,7 @@ import zipfile
 import odo
 from collections import OrderedDict
 import collections
+from time import sleep
 
 
 
@@ -246,28 +247,60 @@ def lines(filename, Chr):
     each line.
     https://gist.github.com/slowkow/6215557
     """
-    print('opening')
+
+    #TODO: see if there is a way to first map chromosomes within file and keep this data in a temp file?
+
+    print('opening file')
     fn_open = gzip.open if filename.endswith('.gz') else open
     df =DataFrame()
-    with fn_open(filename, 'rt') as fh:
+    with fn_open(filename, 'rt') as fh, open('Exac_parse_OUT.csv', 'w') as csvout:
+        a = csv.writer (csvout)
         print ('opened file', filename)
+        print ('looking for chromosome ', Chr)
+        i=0
+        items = list(range(1, 23))
+        l = len(items)
+        printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
         for line in fh:
-            # if line.startswith('#'):
-            #     print ('skipping comment')
-            #     continue
-            # print('looking for chromosome ', Chr)
+
+            if line.startswith('#'):
+                 #print ('skipping comment')
+                 continue
+            #print('looking for chromosome ', Chr, 'currently on', line[0])
+
             if line[0]==Chr:
                 #print('Searching within chromosome ', Chr)
 
                 query=parse(line)['CSQ']
-                if any(ENST in s for s in query):
-                    print (query)
+                #strip first row, dont need that data
+                #query = query[1]
+                #search for protein coding variants for POI
+                if any(ENSP in s for s in query):
+                    query2=query
+                    if any('protein_coding' in s for s in query2):
+                        print (query2)
+
+                        a.writerows([x.split('|') for x in query2])
+
+                        # with open("Exac.txt", "a") as myfile:
+                        #     for item in query2:
+                        #         myfile.write("%s\n" % item)
+
+                        #df.append(query2, ignore_index=True)
+            if line[0]>Chr:
+
+                break
+
+
+            i = int(line[0])
+            printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 
 
 
 
-            else:
-                continue
+
+
+
 
 
 
@@ -283,7 +316,27 @@ def _get_value(value):
         return value.split(',')
     return value
 
-
+# Print iterations progress
+def printProgress (iteration, total, prefix = '', suffix = '', decimals = 1, barLength = 100):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        barLength   - Optional  : character length of bar (Int)
+        http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    """
+    formatStr       = "{0:." + str(decimals) + "f}"
+    percents        = formatStr.format(100 * (iteration / float(total)))
+    filledLength    = int(round(barLength * iteration / float(total)))
+    bar             = '█' * filledLength + '-' * (barLength - filledLength)
+    sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
+    if iteration == total:
+        sys.stdout.write('\n')
+    sys.stdout.flush()
 
 def main ():
 
