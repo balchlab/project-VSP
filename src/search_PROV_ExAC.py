@@ -1,9 +1,16 @@
+'''
+Missense variant miner:
+find missense variants in ExAC, score them using PROVEAN, MutPred and dbNSFP
+return csv file.
+
+
+
+'''
 from __future__ import print_function
 from chardet.universaldetector import UniversalDetector
 import sys, traceback,subprocess,gzip,glob, tarfile,os, signal
 import pandas as pd
 import csv
-import numpy as np
 import numpy as np
 from pandas import HDFStore,DataFrame
 import h5py
@@ -34,6 +41,7 @@ FILENAME4 = "dbNSFP_output.csv"
 FILENAME5 = "dbNSFP_extract.csv"
 UniProt = "P13569"
 Chr = "7"
+
 # change directory to working with DAta
 os.chdir("../Data/")
 cwd = os.getcwd()
@@ -252,64 +260,44 @@ def lines(filename, Chr):
 
     print('opening file')
     fn_open = gzip.open if filename.endswith('.gz') else open
-
     with fn_open(filename, 'rt') as fh, open('Exac_parse_OUT.csv', 'w') as csvout:
         a = csv.writer (csvout)
         print ('opened file', filename)
         print ('looking for chromosome ', Chr)
-        i=0
         items = list(range(1, 23))
         l = len(items)
-        printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
-        for line in fh:
 
+        #printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 
+        for good_line in find_good_lines(fh):
 
-            if line.startswith('#'):
-                continue
+            #print('Searching within chromosome ', Chr)
+            query=parse(good_line)['CSQ']
 
-            i = int(line[0])
-            printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
+            #strip first row, dont need that data
+            #query = query[1]
 
+            #search for protein coding variants for POI
+            if any(ENSP in s for s in query):
 
-            if line[0]<Chr:
-                continue
+                query2=query
+                if any('protein_coding' in s for s in query2):
+                    print (query2)
+                    a.writerows([x.split('|') for x in query2])
 
-            if line[0]==Chr:
-                #print('Searching within chromosome ', Chr)
+def find_good_lines(fh):
 
-                query=parse(line)['CSQ']
-                #strip first row, dont need that data
-                #query = query[1]
-                #search for protein coding variants for POI
-                if any(ENSP in s for s in query):
-                    query2=query
-                    if any('protein_coding' in s for s in query2):
-                        print (query2)
+    for line in fh:
+        if line.startswith('#'):
+            continue
+        if line[0]<Chr:
 
-                        a.writerows([x.split('|') for x in query2])
+            continue
+        if line[0]==Chr:
 
-                        # with open("Exac.txt", "a") as myfile:
-                        #     for item in query2:
-                        #         myfile.write("%s\n" % item)
-
-                        #df.append(query2, ignore_index=True)
-            if line[0]>Chr:
-
-                break
-
-
-
-
-
-
-
-
-
-
-
-
-
+            yield line
+        if line[0]>Chr:
+            break
 
 
 def _get_value(value):
