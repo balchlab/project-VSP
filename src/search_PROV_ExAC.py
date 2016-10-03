@@ -1,3 +1,4 @@
+
 '''
 Missense variant miner:
 find missense variants in ExAC, score them using PROVEAN, MutPred and dbNSFP
@@ -118,28 +119,59 @@ def generatorExAC (filename, Chr):
         #     else:
         #         parse(line)
 
-def mineMutPred(ENST, UniProt):
-    #TODO: Have to search both ENST and UniPROT codes in same query
+def mineMutPred(ENST, UniProt, Chr):
+    ChrMutPredFilesDict = {
+        '1':'dbnsfp_chr1_mutpred.txt',
+        '2':'dbnsfp_chr2_mutpred.txt',
+        '3':'dbnsfp_chr3_mutpred.txt',
+        '4':'dbnsfp_chr4_mutpred.txt', #ENSG is row 19"
+        '5':'dbnsfp_chr5_mutpred.txt',
+        '6':'dbnsfp_chr6_mutpred.txt',
+        '7':'dbnsfp_chr7_mutpred.txt',
+        '8':'dbnsfp_chr8_mutpred.txt',
+        '9':'dbnsfp_chr9_mutpred.txt',
+        '10':'dbnsfp_chr10_mutpred.txt',
+        '11':'dbnsfp_chr11_mutpred.txt',
+        '12':'dbnsfp_chr12_mutpred.txt',
+        '13':'dbnsfp_chr13_mutpred.txt',
+        '14':'dbnsfp_chr14_mutpred.txt',
+        '15':'dbnsfp_chr15_mutpred.txt',
+        '16':'dbnsfp_chr16_mutpred.txt',
+        '17':'dbnsfp_chr17_mutpred.txt',
+        '18':'dbnsfp_chr18_mutpred.txt',
+        '19':'dbnsfp_chr19_mutpred.txt',
+        '20':'dbnsfp_chr20_mutpred.txt',
+        '21':'dbnsfp_chr21_mutpred.txt',
+        'X':'dbnsfp_chrX_mutpred.txt',
+        'Y':'dbnsfp_chrY_mutpred.txt',
+        }
+    #TODO: This is working but is very slow, need to make into Generator?
     #read from tsv.gz file
-    with gzip.open('MutPred.txt.gz','rt') as tsvin, open(FILENAME3, 'wt') as csvout:
-
+    with tarfile.open('Mutpred.tar.gz') as tsvin, open(FILENAME3, 'wt') as csvout:
         csvout = csv.writer(csvout)
-        tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
+        tar = tsvin.extractfile(ChrMutPredFilesDict[Chr])
+        print(tar)
+
+        tp = pd.read_table(tar, delimiter='\t', quoting = csv.QUOTE_NONE)
+        print(type(tp))
+
+        #tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
         print ('looking for this query: ',ENST, UniProt)
-        for i in range(1):
-            row1 = next(tsvin)
-            print(row1)
-            print('found ', len(row1), 'rows' )
-            csvout.writerows([row1])
-            i=+1
+        # for i in range(1):
+        #     row1 = next(tp)
+        #     print(row1)
+        #     print('found ', len(row1), 'rows' )
+        #     csvout.writerows([row1])
+        #     i=+1
         variants = 0
-        for row in tsvin:
+        for index, row in tp.iterrows():
+
             count = row[1]
             #print(count,ENST, UniProt)
             if count == ENST or count == UniProt:
                 variants +=1
-                print(variants,' writing', S, 'variant scores ', row[0])
-                csvout.writerows([row[0:len(row1)]])
+                print(variants,' writing variant scores ', row[0:2])
+                csvout.writerows([row[0:len(row)]])
 
         print ('found ',variants , 'variant MutPred Scores')
 def mine_dbNSFP(Chr, ENSG):
@@ -147,7 +179,7 @@ def mine_dbNSFP(Chr, ENSG):
         'chr1':'dbNSFP3.2c_variant.chr1',
         'chr2':'dbNSFP3.2c_variant.chr2',
         'chr3':'dbNSFP3.2c_variant.chr3',
-        'chr4':'dbNSFP3.2c_variant.chr4', #ENSG is row 19"
+        'chr4':'dbNSFP3.2c_variant.chr4', 
         'chr5':'dbNSFP3.2c_variant.chr5',
         'chr6':'dbNSFP3.2c_variant.chr6',
         'chr7':'dbNSFP3.2c_variant.chr7',
@@ -387,12 +419,12 @@ def main ():
 
     #mineExAC(ENST, Chr)
 
-    lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+   # lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
 
     #filterExACoutput('Exac_parse_OUT.csv')
 
 
-    #mineMutPred(UniProt,ENST)
+    mineMutPred(UniProt,ENST,Chr)
     #mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
 
