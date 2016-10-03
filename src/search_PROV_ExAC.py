@@ -20,6 +20,8 @@ from collections import OrderedDict
 import collections
 from time import sleep
 import string
+import json
+
 
 
 VCF_HEADER = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
@@ -266,23 +268,48 @@ def lines(filename, Chr):
         print ('looking for chromosome ', Chr)
         items = list(range(1, 23))
         l = len(items)
-
+        FinalResults = OrderedDict()
         #printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 
         for good_line in find_good_lines(fh):
 
             #print('Searching within chromosome ', Chr)
-            query=parse(good_line)#['CSQ']
+
+
+            query=parse(good_line)['CSQ']
+
+
 
             #strip first row, dont need that data
             #query = query[1]
 
-            print (query)
             #search for protein coding variants for POI
             if any(ENST in s for s in query):
                 #print (query)
 
-                a.writerows([x.split('|') for x in query])
+                #combined = good_line['AC']+query
+
+                #print (good_line)
+                #print(type(good_line))
+                #print (':::::')
+
+                p_good_line = parse(good_line)
+                #print(p_good_line)
+                print(':::::')
+                print ((p_good_line)['AC'])
+                print ((p_good_line)['AF'])
+
+
+                for k, e in p_good_line.items():
+                    FinalResults.setdefault(k,[]).append(e)
+
+                #a.writerows([x.split('|') for x in query] + p_good_line['AC'] + p_good_line['AF'] )
+    #print(FinalResults)
+
+    output_dict = json.loads(json.dumps(FinalResults))
+    with open ('ExacDUMP.txt', 'w') as outfile:
+        json.dump(output_dict, outfile)
+
 
 def find_good_lines(fh):
 
