@@ -99,20 +99,13 @@ def dataframeExAC(SYMBOL):
 def generatorExAC (filename, Chr):
     print('searching Chrom:', Chr, 'in file: ',filename)
     lines(filename, Chr)
-
-
-
-
         # for i in range (1):
         #     row1 = next(tsvin)
         #     print (row1)
         #     print ('found', len(row1), 'rows')
         #     csvout.writerows([row1])
         #     i+=1
-
-
-
-        # for line in tsvin:
+		# for line in tsvin:
         #
         #     if line.startswith('#'):
         #         continue
@@ -145,6 +138,7 @@ def mineMutPred(ENST, UniProt, Chr):
         'X':'dbnsfp_chrX_mutpred.txt',
         'Y':'dbnsfp_chrY_mutpred.txt',
         }
+
     #TODO: This is working but is very slow, need to make into Generator?
     #read from tsv.gz file
     with tarfile.open('Mutpred.tar.gz') as tsvin, open(FILENAME3, 'wt') as csvout:
@@ -291,9 +285,7 @@ def lines(filename, Chr):
     each line.
     https://gist.github.com/slowkow/6215557
     """
-
     #TODO: see if there is a way to first map chromosomes within file and keep this data in a temp file?
-
     print('opening file')
     fn_open = gzip.open if filename.endswith('.gz') else open
     with fn_open(filename, 'rt') as fh, open('Exac_parse_OUT.csv', 'w') as csvout:
@@ -304,38 +296,27 @@ def lines(filename, Chr):
         l = len(items)
         FinalResults = OrderedDict()
         #printProgress(i, l, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
-
         for good_line in find_good_lines(fh):
-
-            #print('Searching within chromosome ', Chr)
-
-
+			#parse data line to find protein ID
+			#dict item ['CQS'] contains ENSP IDs and mutation ID in tricode
             query=parse(good_line)['CSQ']
-
-
-
-            #strip first row, dont need that data
-            #query = query[1]
 
             #search for protein coding variants for POI
             if any(ENST in s for s in query):
-                #print (query)
-
-                #combined = good_line['AC']+query
-
-                #print (good_line)
-                #print(type(good_line))
-                #print (':::::')
-
+	            #get the rest of the data for matching lines
                 p_good_line = parse(good_line)
                 #print(p_good_line)
                 print(':::::')
-                print ((p_good_line)['AC'])
-                print ((p_good_line)['AF'])
+                AlleleCount=p_good_line['AC']
+                AlleleFrequnecy=p_good_line['AF']
 
-
-                for k, e in p_good_line.items():
-                    FinalResults.setdefault(k,[]).append(e)
+                for k, e in enumerate(query):
+	                for line in e.splitlines():
+		                if ENSP in line and "missense_variant" in line:
+			                print(line)
+			                print (AlleleCount)
+			                print (AlleleFrequnecy)
+			                sleep(1)
 
                 #a.writerows([x.split('|') for x in query] + p_good_line['AC'] + p_good_line['AF'] )
     #print(FinalResults)
@@ -349,16 +330,14 @@ def find_good_lines(fh):
 
     for line in fh:
         if line.startswith('#'):
+
             continue
         if line[0]<Chr:
-
             continue
         if line[0]==Chr:
-
             yield line
         if line[0]>Chr:
             break
-
 
 def _get_value(value):
     """Interpret null values and return ``None``. Return a list if the value
@@ -421,12 +400,12 @@ def main ():
 
     #mineExAC(ENST, Chr)
 
-   # lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+    lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
 
     #filterExACoutput('Exac_parse_OUT.csv')
 
 
-    mineMutPred(UniProt,ENST,Chr)
+    #mineMutPred(UniProt,ENST,Chr)
     #mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
 
