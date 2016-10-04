@@ -157,6 +157,7 @@ def mineMutPred(ENST, UniProt, Chr):
 
         #tsvin = csv.reader(tsvin, delimiter='\t',quoting=csv.QUOTE_NONE)
         print ('looking for this query: ',ENST, UniProt)
+        #TODO: write first row to file
         # for i in range(1):
         #     row1 = next(tp)
         #     print(row1)
@@ -175,6 +176,7 @@ def mineMutPred(ENST, UniProt, Chr):
 
         print ('found ',variants , 'variant MutPred Scores')
 def mine_dbNSFP(Chr, ENSG):
+    #TODO: should be able to read file names and iterate through them
     ChrFilesDict = {
         'chr1':'dbNSFP3.2c_variant.chr1',
         'chr2':'dbNSFP3.2c_variant.chr2',
