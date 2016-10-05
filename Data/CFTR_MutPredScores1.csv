@@ -1,4 +1,3 @@
-Genomic_location,ProteinID,MUTATION,MUTPRED Score,Hypothesis
 7:117120149:A:C,P13569,M1L,0.984,Loss of MoRF binding (P = 0.1564); Loss of glycosylation at P5 (P = 0.1716); Loss of phosphorylation at S4 (P = 0.3269); Loss of disorder (P = 0.3646); Loss of solvent accessibility (P = 0.5485)
 7:117120149:A:G,P13569,M1V,0.977,Loss of glycosylation at P5 (P = 0.1081); Loss of MoRF binding (P = 0.2189); Gain of helix (P = 0.2684); Loss of phosphorylation at S4 (P = 0.2955); Loss of solvent accessibility (P = 0.3103)
 7:117120149:A:T,P13569,M1L,0.984,Loss of MoRF binding (P = 0.1564); Loss of glycosylation at P5 (P = 0.1716); Loss of phosphorylation at S4 (P = 0.3269); Loss of disorder (P = 0.3646); Loss of solvent accessibility (P = 0.5485)

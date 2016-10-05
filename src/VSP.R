@@ -30,9 +30,11 @@ GrapthTitle <- "CFTR MutPpred - ExAC"
 EXAC<-read.csv(EXAC_DATA)
 PROV<-read.csv(PROV_DATA, sep =',')
 PROV_transformed<-reshape(PROV, idvar="position", v.names = "PROV_Scores", timevar ="Index", varying = c("A", "C", "D", "E","F", "G", "H", "I", "K", "L", "M", "N","P", "Q", "R", "S", "T", "V", "W", "Y","Del"), direction="long")
-colnames (PROV_transformed)[2] <-"AA_POSITION"
-colnames (PROV_transformed)[4] <-"PROVEAN_SCORE"
-Merged_DF<-merge(EXAC,PROV_transformed, by=c("AA_POSITION"), all =FALSE)
+MutPred<-read.csv(MUTPRED_DATA)
+#colnames (PROV_transformed)[2] <-"AA_POSITION"
+#colnames (PROV_transformed)[4] <-"PROVEAN_SCORE"
+Merged_DF<-merge(EXAC,MutPred, by=c("MUTATION"), all =FALSE)
+
 Merged_DF[is.na(Merged_DF)]<-0
 
 #Sals function to strip amino acid notation for variants... Maybe put in a separate file? 
@@ -59,12 +61,12 @@ EXAC$Ptein.Consequence<-gsub("p.","", as.character(EXAC$amino_acid_change))
 
 #adjust prediction scores - so that the range is similar to AA coordinates
 Merged_DF$PROVEAN_SCORE <- Merged_DF$PROVEAN_SCORE*-100
-Merged_DF$MUT_PRED<-round(EXAC$MUT_PRED*100, 0)
-Merged_DF$MUT_PRED<-rescale(EXAC$MUT_PRED, to =c(1,1000)) #TODO:needs to be auto set to length of protein
+Merged_DF$MUTPRED.Score<-round(Merged_DF$MUTPRED.Score*100, 0)
+Merged_DF$MUTPRED.Score<-rescale(Merged_DF$MUTPRED.Score, to =c(1,1000)) #TODO:needs to be auto set to length of protein
 
 #set max allele count to a value best suited for analysis
 #TODO:Figure out how to do this algorithmically
-Merged_DF2$Allele.Count[Merged_DF2$Allele.Count>5]<-5
+Merged_DF$ALLELE.COUNT[Merged_DF$Allele.Count>5]<-5
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
 #OP      <- par( mar=c(2,2,2,2))
