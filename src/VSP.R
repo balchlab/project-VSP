@@ -21,10 +21,13 @@ library(magrittr)
 setwd ("D:/Balclab/projects/project-VSP/")
 
 PROV_DATA <- "Data/CFTR_PROVEANScores.csv"
-EXAC_DATA <- "Data/CFTR_ExACScores.csv"
-MUTPRED_DATA <- "Data/CFTR_MutPredScores.csv"
-SavePlot <-"/VSP-images/CFTR_MutPred-Exac.png"
-GrapthTitle <- "CFTR MutPpred - ExAC"
+EXAC_DATA <- "Data/PKD1_ExACScores.csv"
+MUTPRED_DATA <- "Data/PKD1_MutPredScores.csv"
+SavePlot <-"/VSP-images/PKD1_MutPred-EXAC.png"
+AC_Limit <- 10
+GraphTitle <- c("PKD1 MutPpred - ExAC, AC Limit =", AC_Limit)
+                
+
 
 #read data files
 EXAC<-read.csv(EXAC_DATA)
@@ -37,83 +40,82 @@ Merged_DF<-merge(EXAC,MutPred, by=c("MUTATION"), all =FALSE)
 
 Merged_DF[is.na(Merged_DF)]<-0
 
-#Sals function to strip amino acid notation for variants... Maybe put in a separate file? 
-split_cols<-function(foo){
-  out<-vector()
-  for(i in 1:length(foo)){
-    
-    vec<-unlist(strsplit(foo[i],split =""))
-    
-    first<-vec[1]
-    last<-vec[length(vec)]
-    mid<-paste(vec[2:(length(vec)-1)],collapse="")
-    
-    int_row<-c(first,mid,last)
-    out=rbind(out,int_row)
-  }
-  return(out)
-  
-}
-
-
 #modify amino acid notation to drop .p (ExAC format)
 EXAC$Ptein.Consequence<-gsub("p.","", as.character(EXAC$amino_acid_change))
 
 #adjust prediction scores - so that the range is similar to AA coordinates
 Merged_DF$PROVEAN_SCORE <- Merged_DF$PROVEAN_SCORE*-100
 Merged_DF$MUTPRED.Score<-round(Merged_DF$MUTPRED.Score*100, 0)
-Merged_DF$MUTPRED.Score<-rescale(Merged_DF$MUTPRED.Score, to =c(1,1000)) #TODO:needs to be auto set to length of protein
+Merged_DF$MUTPRED.Score<-rescale(Merged_DF$MUTPRED.Score, to =c(1,2000)) #TODO:needs to be auto set to length of protein
 
 #set max allele count to a value best suited for analysis
 #TODO:Figure out how to do this algorithmically
-Merged_DF$ALLELE.COUNT[Merged_DF$Allele.Count>5]<-5
+Merged_DF$ALLELE.COUNT[Merged_DF$ALLELE.COUNT>AC_Limit]<-AC_Limit
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
 #OP      <- par( mar=c(2,2,2,2))
-coordinates(Merged_DF) <- c("AA_POSITION","PROVEAN_SCORE")
-plot(Merged_DF, pch=16, ,cex=((Merged_DF$Allele.Count-1)/200))
-text(Merged_DF, as.character(Merged_DF$Allele.Count), pos=3, col="grey", cex=0.8)
+coordinates(Merged_DF) <- c("AA_POS","MUTPRED.Score")
+plot(Merged_DF, pch=16, ,cex=((Merged_DF$ALLELE.COUNT-1)/200))
+text(Merged_DF, as.character(Merged_DF$ALLELE.COUNT), pos=3, col="grey", cex=0.8)
 
 # Create an empty grid where n is the total number of cells
 #layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
 
 grd              <- as.data.frame(spsample(Merged_DF, "regular", n=60000))
-names(grd)       <- c("AA_POSITION", "PROVEAN_SCORE")
-coordinates(grd) <- c("AA_POSITION", "PROVEAN_SCORE")
+names(grd)       <- c("AA_POS", "MUTPRED.Score")
+coordinates(grd) <- c("AA_POS","MUTPRED.Score")
 gridded(grd)     <- TRUE  # Create SpatialPixel object
 fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 # Interpolate the surface using a power value of 2 (idp=2.0)
-Merged_DF.idw <- idw(Allele.Count~1,Merged_DF,newdata=grd,idp=3.0)
+Merged_DF.idw <- idw(ALLELE.COUNT~1,Merged_DF,newdata=grd,idp=3.0)
 # Plot the raster and the sampled points
 #OP      <- par( mar=c(6,2,2,2))
 png(filename=SavePlot)
 
 par(mar = c(4, 3, 2,4 ), mgp = c(1, 0.5, 0))
 
-image(Merged_DF.idw,"var1.pred",col=terrain.colors(50), xlab="AA POSITION", ylab="PROVEAN", mgp = c(1, 4, 0))
-
-axis(1, at = EXAC$AA_POSITION, labels = EXAC$AA_POSITION, las =1, pos=0)
-                                #round(EXAC$MUT_PRED, 0)
+image(Merged_DF.idw,"var1.pred",col=terrain.colors(50), xlab="AA POSITION", ylab="MutPRED", mgp = c(1, 4, 0))
 x.tick.number <- 10
-at <- seq(1, max(Merged_DF.idw$PROVEAN_SCORE), length.out=x.tick.number)
+y.tick.number <- 10
+
+at <- seq(1, max(Merged_DF$AA_POS), length.out=x.tick.number)
+axis(1, at = Merged_DF$AA_POSITION, labels = Merged_DF$AA_POSITION, las =1, pos=0)
+                             #round(EXAC$MUT_PRED, 0)
+at <- seq(1, max(Merged_DF$MUTPRED.Score), length.out=y.tick.number)
 axis(2, at = at, labels = NULL , las = 1, pos=0)
 
 contour(Merged_DF.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
 #box()
 plot(Merged_DF, add=TRUE, pch=16, cex=0.5)
-#text(coordinates(EXAC), as.character(round(EXAC$AA_POSITION,1)), pos=4, cex=0.8, col="blue")
+#text(coordinates(Merged_DF), as.character(round(Merged_DF$AA_POS,1)), pos=4, cex=0.8, col="blue")
 parameters<-par(OP)
 str(OP)
 title(main=GraphTitle, font.main =4)
-dev.off()
+#dev.off()
 
 
 
-
+# #Sals function to strip amino acid notation for variants... Maybe put in a separate file? 
+# split_cols<-function(foo){
+#   out<-vector()
+#   for(i in 1:length(foo)){
+#     
+#     vec<-unlist(strsplit(foo[i],split =""))
+#     
+#     first<-vec[1]
+#     last<-vec[length(vec)]
+#     mid<-paste(vec[2:(length(vec)-1)],collapse="")
+#     
+#     int_row<-c(first,mid,last)
+#     out=rbind(out,int_row)
+#   }
+#   return(out)
+#   
+# }
 
 #Attempt at Kriging, work in progress
 # EXAC %>% as.data.frame %>% 
-#   ggplot(aes(AA_POSITION, PROVEAN_SCORE)) + geom_point(aes(size=Allele.Count), color="blue", alpha=3/4) + 
+#   ggplot(aes(AA_POSITION, PROVEAN_SCORE)) + geom_point(aes(size=ALLELE.COUNT), color="blue", alpha=3/4) + 
 #   ggtitle("Zinc Concentration (ppm)") + coord_equal() + theme_bw()
 # 
 # class(EXAC)
@@ -127,7 +129,7 @@ dev.off()
 # EXAC@data%>%glimpse
 # EXAC%>%as.data.frame%>%glimpse
 # 
-# lzn.vgm <- variogram(log(Allele.Count)~1, EXAC) # calculates sample variogram values 
+# lzn.vgm <- variogram(log(ALLELE.COUNT)~1, EXAC) # calculates sample variogram values 
 # 
 # lzn.fit <- fit.variogram(lzn.vgm, model=vgm(1, "Sph",800,-200)) # fit model
 # 
@@ -157,7 +159,7 @@ dev.off()
 #   ggtitle("Points at which to estimate")
 # 
 # coordinates(EXAC) <- ~ AA_POSITION + PROVEAN_SCORE # step 3 above
-# lzn.kriged <- krige(log(Allele.Count) ~ 1, EXAC, EXAC.grid, model=lzn.fit)
+# lzn.kriged <- krige(log(ALLELE.COUNT) ~ 1, EXAC, EXAC.grid, model=lzn.fit)
 # 
 # library(gridExtra)
 # grid.arrange(plot1, plot2, ncol = 2)
