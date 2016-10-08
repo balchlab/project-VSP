@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4b20120e-5d15-416b-8353-29c2e9517837" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/VSP.R" afterPath="$PROJECT_DIR$/src/VSP.R" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/search_PROV_ExAC.py" afterPath="$PROJECT_DIR$/src/search_PROV_ExAC.py" />
     </list>
     <ignored path="project-VSP.iws" />
@@ -28,16 +27,16 @@
       <file leaf-file-name="search_PROV_ExAC.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/search_PROV_ExAC.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.3846154">
-              <caret line="376" column="92" selection-start-line="376" selection-start-column="92" selection-end-line="376" selection-end-column="92" />
+            <state vertical-scroll-proportion="0.6730769">
+              <caret line="44" column="34" selection-start-line="44" selection-start-column="34" selection-end-line="44" selection-end-column="34" />
               <folding>
                 <element signature="e#0#128#1" expanded="true" />
                 <element signature="e#129#166#0" expanded="true" />
-                <element signature="e#8418#8593#1" expanded="true" />
-                <element signature="e#8962#9061#1" expanded="true" />
-                <element signature="e#9799#9927#1" expanded="true" />
-                <element signature="e#14213#14309#1" expanded="true" />
-                <element signature="e#15067#15550#1" expanded="true" />
+                <element signature="e#8553#8728#1" expanded="true" />
+                <element signature="e#9097#9196#1" expanded="true" />
+                <element signature="e#9934#10062#1" expanded="true" />
+                <element signature="e#14347#14443#1" expanded="true" />
+                <element signature="e#15201#15684#1" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -361,11 +360,11 @@
           <folding>
             <element signature="e#0#128#1" expanded="true" />
             <element signature="e#129#166#0" expanded="true" />
-            <element signature="e#8418#8593#1" expanded="true" />
-            <element signature="e#8962#9061#1" expanded="true" />
-            <element signature="e#9799#9927#1" expanded="true" />
-            <element signature="e#14213#14309#1" expanded="true" />
-            <element signature="e#15067#15550#1" expanded="true" />
+            <element signature="e#8553#8728#1" expanded="true" />
+            <element signature="e#9097#9196#1" expanded="true" />
+            <element signature="e#9934#10062#1" expanded="true" />
+            <element signature="e#14347#14443#1" expanded="true" />
+            <element signature="e#15201#15684#1" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -393,11 +392,11 @@
           <folding>
             <element signature="e#0#128#1" expanded="true" />
             <element signature="e#129#166#0" expanded="true" />
-            <element signature="e#8418#8593#1" expanded="true" />
-            <element signature="e#8962#9061#1" expanded="true" />
-            <element signature="e#9799#9927#1" expanded="true" />
-            <element signature="e#14213#14309#1" expanded="true" />
-            <element signature="e#15067#15550#1" expanded="true" />
+            <element signature="e#8553#8728#1" expanded="true" />
+            <element signature="e#9097#9196#1" expanded="true" />
+            <element signature="e#9934#10062#1" expanded="true" />
+            <element signature="e#14347#14443#1" expanded="true" />
+            <element signature="e#15201#15684#1" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -425,11 +424,11 @@
           <folding>
             <element signature="e#0#128#1" expanded="true" />
             <element signature="e#129#166#0" expanded="true" />
-            <element signature="e#8418#8593#1" expanded="true" />
-            <element signature="e#8962#9061#1" expanded="true" />
-            <element signature="e#9799#9927#1" expanded="true" />
-            <element signature="e#14213#14309#1" expanded="true" />
-            <element signature="e#15067#15550#1" expanded="true" />
+            <element signature="e#8553#8728#1" expanded="true" />
+            <element signature="e#9097#9196#1" expanded="true" />
+            <element signature="e#9934#10062#1" expanded="true" />
+            <element signature="e#14347#14443#1" expanded="true" />
+            <element signature="e#15201#15684#1" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -457,11 +456,11 @@
           <folding>
             <element signature="e#0#128#1" expanded="true" />
             <element signature="e#129#166#0" expanded="true" />
-            <element signature="e#8418#8593#1" expanded="true" />
-            <element signature="e#8962#9061#1" expanded="true" />
-            <element signature="e#9799#9927#1" expanded="true" />
-            <element signature="e#14213#14309#1" expanded="true" />
-            <element signature="e#15067#15550#1" expanded="true" />
+            <element signature="e#8553#8728#1" expanded="true" />
+            <element signature="e#9097#9196#1" expanded="true" />
+            <element signature="e#9934#10062#1" expanded="true" />
+            <element signature="e#14347#14443#1" expanded="true" />
+            <element signature="e#15201#15684#1" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -500,16 +499,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/search_PROV_ExAC.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3846154">
-          <caret line="376" column="92" selection-start-line="376" selection-start-column="92" selection-end-line="376" selection-end-column="92" />
+        <state vertical-scroll-proportion="0.6730769">
+          <caret line="44" column="34" selection-start-line="44" selection-start-column="34" selection-end-line="44" selection-end-column="34" />
           <folding>
             <element signature="e#0#128#1" expanded="true" />
             <element signature="e#129#166#0" expanded="true" />
-            <element signature="e#8418#8593#1" expanded="true" />
-            <element signature="e#8962#9061#1" expanded="true" />
-            <element signature="e#9799#9927#1" expanded="true" />
-            <element signature="e#14213#14309#1" expanded="true" />
-            <element signature="e#15067#15550#1" expanded="true" />
+            <element signature="e#8553#8728#1" expanded="true" />
+            <element signature="e#9097#9196#1" expanded="true" />
+            <element signature="e#9934#10062#1" expanded="true" />
+            <element signature="e#14347#14443#1" expanded="true" />
+            <element signature="e#15201#15684#1" expanded="true" />
           </folding>
         </state>
       </provider>
