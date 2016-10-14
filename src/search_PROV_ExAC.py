@@ -7,7 +7,7 @@ return csv file.
 
 '''
 from __future__ import print_function
-from chardet.universaldetector import UniversalDetector
+#from chardet.universaldetector import UniversalDetector
 import sys, traceback, subprocess, gzip, glob, tarfile, os, signal
 import pandas as pd
 import csv
@@ -28,17 +28,18 @@ VCF_HEADER = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
 #ENSP = "ENSP00000003084" #CFTR
 #ENSP = "ENSP00000269228" #NPC1
 ENSP = "ENSP00000262304" #PKD1
-ENSP = "ENSP00000262410" #MAPT
+#ENSP = "ENSP00000262410" #MAPT
 #ENSG = "ENSG00000001626" #CFTR
 #ENSG = "ENSG00000141458" #NPC1
 ENSG = "ENSG00000008710" #PKD1
-ENSG = "ENSG00000186868" #ENSG
+ENSG = "" #PKD2
+#ENSG = "ENSG00000186868" #ENSG
 # ENSG = "ENSG00000186868" #MAPT
 # ENSG = "ENSG00000272636" #Diagnostic - beginning of Chr17
 #ENST = "ENST00000003084" CFTR
 #ENST = 'ENST00000269228' #NPC1i
 ENST = "ENST00000262304" #PKD1
-ENST = "ENST00000262410" #MAPT
+#ENST = "ENST00000262410" #MAPT
 
 
 GENE = "MAPT"
@@ -46,16 +47,16 @@ FILENAME = "CFTR_PROV_extract.csv"
 FILENAME1 = "CFTR_PROVEANScores.csv"
 FILENAME2 = "MAPT_ExACScores.csv"
 FILENAME3 = "MAPT_MutPredScores.csv"
-FILENAME4 = "dbNSFP_output.csv"
+FILENAME4 = "PKD1_dbNSFP_output.csv"
 FILENAME5 = "dbNSFP_extract.csv"
 FILENAME6 = "MAPT_ExACScores.csv"
 #UniProt = "P13569" CFTR
 #UniProt = "O15118" #NPC1
-UniProt = "P98161" #PKD1
+#UniProt = "P98161" #PKD1
 UniProt = "P10636" #MAPT
 #Chr = '18' NPC1
 Chr = "16" #PKD1
-Chr = "17"
+#Chr = "1"
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -196,33 +197,33 @@ def mineMutPred(ENST, UniProt, Chr):
 def mine_dbNSFP(Chr, ENSG):
     # TODO: should be able to read file names and iterate through them
     chrfilesdict = {
-        'chr1': 'dbNSFP3.2c_variant.chr1',
-        'chr2': 'dbNSFP3.2c_variant.chr2',
-        'chr3': 'dbNSFP3.2c_variant.chr3',
-        'chr4': 'dbNSFP3.2c_variant.chr4',
-        'chr5': 'dbNSFP3.2c_variant.chr5',
-        'chr6': 'dbNSFP3.2c_variant.chr6',
-        'chr7': 'dbNSFP3.2c_variant.chr7',
-        'chr8': 'dbNSFP3.2c_variant.chr8',
-        'chr9': 'dbNSFP3.2c_variant.chr9',
-        'chr10': 'dbNSFP3.2c_variant.chr10',
-        'chr11': 'dbNSFP3.2c_variant.chr11',
-        'chr12': 'dbNSFP3.2c_variant.chr12',
-        'chr13': 'dbNSFP3.2c_variant.chr13',
-        'chr14': 'dbNSFP3.2c_variant.chr14',
-        'chr15': 'dbNSFP3.2c_variant.chr15',
-        'chr16': 'dbNSFP3.2c_variant.chr16',
-        'chr17': 'dbNSFP3.2c_variant.chr17',
-        'chr18': 'dbNSFP3.2c_variant.chr18',
-        'chr19': 'dbNSFP3.2c_variant.chr19',
-        'chr20': 'dbNSFP3.2c_variant.chr20',
-        'chr21': 'dbNSFP3.2c_variant.chr21',
-        'chrX': 'dbNSFP3.2c_variant.chrX',
-        'chrM': 'dbNSFP3.2c_variant.chrM',
+        '1': 'dbNSFP3.2c_variant.chr1',
+        '2': 'dbNSFP3.2c_variant.chr2',
+        '3': 'dbNSFP3.2c_variant.chr3',
+        '4': 'dbNSFP3.2c_variant.chr4',
+        '5': 'dbNSFP3.2c_variant.chr5',
+        '6': 'dbNSFP3.2c_variant.chr6',
+        '7': 'dbNSFP3.2c_variant.chr7',
+        '8': 'dbNSFP3.2c_variant.chr8',
+        '9': 'dbNSFP3.2c_variant.chr9',
+        '10': 'dbNSFP3.2c_variant.chr10',
+        '11': 'dbNSFP3.2c_variant.chr11',
+        '12': 'dbNSFP3.2c_variant.chr12',
+        '13': 'dbNSFP3.2c_variant.chr13',
+        '14': 'dbNSFP3.2c_variant.chr14',
+        '15': 'dbNSFP3.2c_variant.chr15',
+        '16': 'dbNSFP3.2c_variant.chr16',
+        '17': 'dbNSFP3.2c_variant.chr17',
+        '18': 'dbNSFP3.2c_variant.chr18',
+        '19': 'dbNSFP3.2c_variant.chr19',
+        '20': 'dbNSFP3.2c_variant.chr20',
+        '21': 'dbNSFP3.2c_variant.chr21',
+        'X': 'dbNSFP3.2c_variant.chrX',
+        'M': 'dbNSFP3.2c_variant.chrM',
     }
     # read from tsv.gz file
     with zipfile.ZipFile('dbNSFPv3.2c.zip', 'r') as tsvin, open(FILENAME4, 'wt') as csvout:
-        tp = pd.read_csv(tsvin.open(chrfilesdict[Chr]), delimiter='\t', quoting=csv.QUOTE_NONE, iterator=True,
+        tp = pd.read_csv(tsvin.open(chrfilesdict['1']), delimiter='\t', quoting=csv.QUOTE_NONE, iterator=True,
                          dtype=object, chunksize=40)  # header = None)
         writer = csv.writer(csvout)
         for i in range(1):
@@ -232,12 +233,16 @@ def mine_dbNSFP(Chr, ENSG):
             writer.writerows([row1[1:len(row1)]])
             i = +1
         print(chrfilesdict[Chr])
-
+        tp = pd.read_csv(tsvin.open(chrfilesdict[Chr]), delimiter='\t', quoting=csv.QUOTE_NONE ,iterator=True,
+                         dtype=object, chunksize=40)  # header = None)
         variants = 0
+
+        #TODO: see if there is a way to get the first row of every chunk, to speed up search
         for chunk in tp:
             row = next(chunk.itertuples())
             count = row[20]
-            # print (row[1:len(row)])
+
+            #print (row[1:len(row)])
             if count == ENSG:
                 variants += 1
                 print(variants, ' writing', ENSG, 'variant scores ', row[0])
@@ -245,17 +250,45 @@ def mine_dbNSFP(Chr, ENSG):
         print(variants)
 
 
+def db_NSFP_iterate(fh):
+    #TODO: rewrite to account for Chr vs int variables and to reduce unnecessary searching.
+    i='0'
+    found = 0
+
+    for line in fh:
+        print (line)
+
+        ENSG_match = line[20]
+
+        if ENSG_match == ENSG:
+            print (line)
+            yield line
+            found = 1
+        else:
+            if ENSG_match != ENSG and found ==1:
+                print ("no more to be found")
+                break
+            continue
+
 def extract_dbNSFP(file):
+    """ There are rows with multiple comma separated values in them """
     with open(file, 'rt') as tsvin, open(FILENAME5, 'wt') as csvout:
         dict = []
-        df = pd.read_csv(tsvin, delimiter='\t')
-        print(df)
-        for i in range(5):
-            row = next(df)
-            print(row)
-            dict.append(row)
-            i += 1
-        print(dict)
+        df = pd.read_csv(tsvin, delimiter=',', encoding="utf-8-sig")
+
+        #print (df.head(1))
+        #print (df['Ensembl_transcriptid'])
+        for col in ['Ensembl_transcriptid', 'Ensembl_proteinid', 'aapos', 'SIFT_score', 'SIFT_pred', 'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred','PROVEAN_score']:
+            df [col] = df[col].str.split(',')
+        #print (df)
+        #print (df['Ensembl_transcriptid'])
+        i =  df['Ensembl_transcriptid'].map(len)
+        j = np.repeat(np.arrange(len(df)),i)
+        k = np.concatenate(list(map(np.arrange(), i)))
+        df = df.iloc[j]
+        for col in ['Ensembl_transcriptid', 'Ensembl_proteinid', 'aapos', 'SIFT_score', 'SIFT_pred', 'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred','PROVEAN_score']:
+            df [col] = list(map(lambda xs, i: xs[i], df[col], k))
+        print (df['Ensembl_transcriptid'])
 
 
 def count_comments(filename):
@@ -406,8 +439,6 @@ def find_good_lines(fh):
         #     break
 
 
-
-
 def _get_value(value):
     """Interpret null values and return ``None``. Return a list if the value
 	contains a comma.
@@ -465,20 +496,21 @@ def printProgress(iteration, total, prefix='', suffix='', decimals=1, barLength=
 
 
 def main():
+
     # findPROVEANscores(ENSP)
     # formatPROVEAN(FILENAME)
 
     # mineExAC(ENST, Chr)
 
-    lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+    #lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
 
 
     #filterExACoutput('Exac_parse_OUT.csv')
 
 
-    mineMutPred(UniProt,ENST,Chr)
-# mine_dbNSFP(Chr, ENSG)
-# extract_dbNSFP(FILENAME4)
+    #mineMutPred(UniProt,ENST,Chr)
+    #mine_dbNSFP(Chr, ENSG)
+    extract_dbNSFP(FILENAME4)
 
 
 
