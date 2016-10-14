@@ -271,24 +271,37 @@ def db_NSFP_iterate(fh):
             continue
 
 def extract_dbNSFP(file):
-    """ There are rows with multiple comma separated values in them """
+
+    """ There are rows with multiple comma separated values in them
+        this function works to convert such rows into rows which have
+        one value per line
+        Problems is that it will not run unless rows have exact number of comma sep. values
+        so next step is to subset these rows and then merge with the rest of the dataframe
+    """
     with open(file, 'rt') as tsvin, open(FILENAME5, 'wt') as csvout:
         dict = []
         df = pd.read_csv(tsvin, delimiter=',', encoding="utf-8-sig")
 
         #print (df.head(1))
         #print (df['Ensembl_transcriptid'])
-        for col in ['Ensembl_transcriptid', 'Ensembl_proteinid', 'aapos', 'SIFT_score', 'SIFT_pred', 'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred','PROVEAN_score']:
-            df [col] = df[col].str.split(',')
-        #print (df)
+        #column_names = ['Ensembl_transcriptid', 'Ensembl_proteinid',  'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred']
+        #print(column_names)
+        df = df[['Ensembl_transcriptid', 'Ensembl_proteinid',  'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred']]
+
+        for col in ['Ensembl_transcriptid', 'Ensembl_proteinid',  'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred']:
+            df [col] = df[col].str.split(';')
+
+
         #print (df['Ensembl_transcriptid'])
+        #df.to_csv(csvout)
         i =  df['Ensembl_transcriptid'].map(len)
-        j = np.repeat(np.arrange(len(df)),i)
-        k = np.concatenate(list(map(np.arrange(), i)))
+        j = np.repeat(np.arange(len(df)),i)
+        k = np.concatenate(list(map(np.arange, i)))
         df = df.iloc[j]
-        for col in ['Ensembl_transcriptid', 'Ensembl_proteinid', 'aapos', 'SIFT_score', 'SIFT_pred', 'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred','PROVEAN_score']:
-            df [col] = list(map(lambda xs, i: xs[i], df[col], k))
         print (df['Ensembl_transcriptid'])
+        for col in ['Ensembl_transcriptid', 'Ensembl_proteinid',  'MutationTaster_score','MutationTaster_pred', 'MutationTaster_AAE', 'FATHMM_score', 'FATHMM_pred']:
+            df [col] = list(map(lambda xs, i: xs[i], df[col], k))
+        df.to_csv(csvout)
 
 
 def count_comments(filename):
