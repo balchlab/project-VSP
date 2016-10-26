@@ -32,6 +32,7 @@ ENSP = "ENSP00000262304" #PKD1
 #ENSG = "ENSG00000001626" #CFTR
 #ENSG = "ENSG00000141458" #NPC1
 ENSG = "ENSG00000008710" #PKD1
+ENSG = "ENSG00000118762" #PKD2
 #ENSG = "" #PKD2
 #ENSG = "ENSG00000186868" #ENSG
 # ENSG = "ENSG00000186868" #MAPT
@@ -39,6 +40,7 @@ ENSG = "ENSG00000008710" #PKD1
 #ENST = "ENST00000003084" CFTR
 #ENST = 'ENST00000269228' #NPC1i
 ENST = "ENST00000262304" #PKD1
+ENST = "ENST00000237596" #PKD2
 #ENST = "ENST00000262410" #MAPT
 
 
@@ -47,7 +49,7 @@ FILENAME = "CFTR_PROV_extract.csv"
 FILENAME1 = "CFTR_PROVEANScores.csv"
 FILENAME2 = "MAPT_ExACScores.csv"
 FILENAME3 = "MAPT_MutPredScores.csv"
-FILENAME4 = "PKD1_dbNSFPa_output.csv"
+FILENAME4 = "PKD2_dbNSFPa_output.csv"
 FILENAME5 = "dbNSFP_extract.csv"
 FILENAME6 = "MAPT_ExACScores.csv"
 #UniProt = "P13569" CFTR
@@ -55,7 +57,7 @@ FILENAME6 = "MAPT_ExACScores.csv"
 #UniProt = "P98161" #PKD1
 UniProt = "P10636" #MAPT
 #Chr = '18' NPC1
-Chr = "16" #PKD1
+Chr = "4" #PKD2
 #Chr = "1"
 
 # change directory to working with DAta
@@ -222,33 +224,29 @@ def mine_dbNSFP(Chr, ENSG):
         'M': 'dbNSFP3.2a_variant.chrM',
     }
     # read from tsv.gz file
-    with zipfile.ZipFile('dbNSFPv3.2a.zip', 'r') as tsvin, open(FILENAME4, 'wt') as csvout:
+    with zipfile.ZipFile('dbNSFPv3.2a.zip', 'r') as tsvin, open(FILENAME4, 'wt') as csvout, open('tmp.csv', 'wt') as csvout_temp:
         tp = pd.read_csv(tsvin.open(chrfilesdict['1']), delimiter='\t', quoting=csv.QUOTE_NONE, iterator=True,
-                         dtype=object, chunksize=40)  # header = None)
-        writer = csv.writer(csvout)
+                         dtype=object, chunksize=1)  # header = None)
+
+        writer = csv.writer(csvout, dialect='excel')
+        writer_temp = csv.writer(csvout_temp, dialect = 'excel')
         for i in range(1):
             row1 = next(tp)
-            print(row1)
-            print('found ', len(row1), 'rows')
-            writer.writerows([row1[1:len(row1)]])
-            i = +1
+            writer.writerows([row1])
+            i+=1
         print(chrfilesdict[Chr])
-        tp = pd.read_csv(tsvin.open(chrfilesdict[Chr]), delimiter='\t', quoting=csv.QUOTE_NONE ,iterator=True,
-                         dtype=object, chunksize=40)  # header = None)
-        variants = 0
+        print(ENSG)
+        for line in enumerate(tsvin.open(chrfilesdict[Chr])):
+            line = line[1].decode("utf-8").rstrip().split('\t')
 
-        #TODO: see if there is a way to get the first row of every chunk, to speed up search
-        for chunk in tp:
-            row = next(chunk.itertuples())
-            count = row[20]
-
-            #print (row[1:len(row)])
-            if count == ENSG:
-                variants += 1
-                print(variants, ' writing', ENSG, 'variant scores ', row[0])
-                writer.writerows([row[1:len(row)]])
-        print(variants)
-
+            if ENST == line[20]:
+                writer.writerows([line])
+            elif ENST in line[20] and ';' in line[20]:
+                for i, val in enumerate(line):
+                    if ';' in val:
+                        val = val.split(';', 1)[0]
+                        line[i] = val
+                writer_temp.writerows([line])
 
 def db_NSFP_iterate(fh):
     #TODO: rewrite to account for Chr vs int variables and to reduce unnecessary searching.
@@ -506,27 +504,6 @@ def filterExACoutput(file):
     print(df.head())
 
 
-# Print iterations progress
-def printProgress(iteration, total, prefix='', suffix='', decimals=1, barLength=100):
-    """
-	Call in a loop to create terminal progress bar
-	@params:
-		iteration   - Required  : current iteration (Int)
-		total       - Required  : total iterations (Int)
-		prefix      - Optional  : prefix string (Str)
-		suffix      - Optional  : suffix string (Str)
-		decimals    - Optional  : positive number of decimals in percent complete (Int)
-		barLength   - Optional  : character length of bar (Int)
-		http://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
-	"""
-    formatStr = "{0:." + str(decimals) + "f}"
-    percents = formatStr.format(100 * (iteration / float(total)))
-    filledLength = int(round(barLength * iteration / float(total)))
-    bar = '█' * filledLength + '-' * (barLength - filledLength)
-    sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
-    if iteration == total:
-        sys.stdout.write('\n')
-    sys.stdout.flush()
 
 
 def main():
