@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4b20120e-5d15-416b-8353-29c2e9517837" name="Default" comment="">
+<<<<<<< HEAD
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Data/revel_all_chromosomes.csv" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" />
@@ -10,6 +11,16 @@
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/asd.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Score_alignments.py" afterPath="$PROJECT_DIR$/src/Score_alignments.py" />
+=======
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Alignments/Rubisco.txt" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Score_alignments.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Data/PKD1_dbNSFPa_output.csv" afterPath="$PROJECT_DIR$/Data/PKD1_dbNSFPa_output.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Data/tmp.csv" afterPath="$PROJECT_DIR$/Data/tmp.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Data/PKD2_dbNSFPa_output.csv" afterPath="$PROJECT_DIR$/Data/PKD2_dbNSFPa_output.csv" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/search_PROV_ExAC1.py" afterPath="$PROJECT_DIR$/src/search_PROV_ExAC1.py" />
+>>>>>>> 6bec8cd1571f9589f2b16895658d1d0e674f8b1a
     </list>
     <ignored path="project-VSP.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -23,7 +34,11 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/project-VSP$asd.coverage" NAME="asd Coverage Results" MODIFIED="1479153243670" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+<<<<<<< HEAD
     <SUITE FILE_PATH="coverage/project-VSP$Score_alignments.coverage" NAME="Score_alignments Coverage Results" MODIFIED="1479781074009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+=======
+    <SUITE FILE_PATH="coverage/project-VSP$Score_alignments.coverage" NAME="Score_alignments Coverage Results" MODIFIED="1479778780124" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+>>>>>>> 6bec8cd1571f9589f2b16895658d1d0e674f8b1a
     <SUITE FILE_PATH="coverage/project-VSP$base.coverage" NAME="base Coverage Results" MODIFIED="1476312653078" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/anaconda/lib/python3.5/site-packages/pandas/indexes" />
     <SUITE FILE_PATH="coverage/project-VSP$exac_parser.coverage" NAME="exac_parser Coverage Results" MODIFIED="1476340982806" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/../PrecisionFda-Test-App" />
     <SUITE FILE_PATH="coverage/project-VSP$search_PROV_ExAC.coverage" NAME="search_PROV_ExAC Coverage Results" MODIFIED="1478647745131" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
@@ -76,8 +91,13 @@
       <file leaf-file-name="Score_alignments.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Score_alignments.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="420">
               <caret line="28" column="4" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
+=======
+            <state relative-caret-position="540">
+              <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+>>>>>>> 6bec8cd1571f9589f2b16895658d1d0e674f8b1a
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -164,7 +184,11 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
+<<<<<<< HEAD
     <option name="x" value="387" />
+=======
+    <option name="x" value="829" />
+>>>>>>> 6bec8cd1571f9589f2b16895658d1d0e674f8b1a
     <option name="y" value="23" />
     <option name="width" value="1108" />
     <option name="height" value="990" />
@@ -639,7 +663,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
+<<<<<<< HEAD
     <frame x="387" y="23" width="1108" height="990" extended-state="0" />
+=======
+    <frame x="829" y="23" width="1108" height="990" extended-state="0" />
+>>>>>>> 6bec8cd1571f9589f2b16895658d1d0e674f8b1a
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3032491" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1007,8 +1035,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Score_alignments.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="420">
           <caret line="28" column="4" selection-start-line="28" selection-start-column="4" selection-end-line="28" selection-end-column="4" />
+=======
+        <state relative-caret-position="540">
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+>>>>>>> 6bec8cd1571f9589f2b16895658d1d0e674f8b1a
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>

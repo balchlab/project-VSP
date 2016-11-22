@@ -1,5 +1,7 @@
 import sys
+
 import collections, time
+
 
 
 
@@ -22,6 +24,7 @@ while i < 100:
 
     str_list = []
     s = ""
+
     # first calculate frequencies of each amino acid in position
     # then iterate through these positions again
     # if found match and freq less than 50%
