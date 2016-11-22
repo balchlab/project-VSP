@@ -1,11 +1,20 @@
 import sys
 
 import collections, time
+import pandas as pd
 
 
  # open and read fasta files
  # sperate names and store separately
  #
+
+df = pd.read_csv("../Alignments/Km_data.csv")
+
+Rubisco_data = df[['RbcL Sequence', 'Km CO2', 'Km O2']]
+print (Rubisco_data.head(5))
+Rubisco = {}
+Rubisco = Rubisco_data.set_index('RbcL Sequence').T.to_dict('list')
+
 
 
 fasta = {}
@@ -61,12 +70,12 @@ while i < 100: # this needs to be changed to total length of alignment
         for x in (fasta[key]):
 
             if x[i-1] in low_freq_AAs:
-
-                print (i+1, x[i-1], low_freq_AAs[x[i-1]], key)
+                name = key.partition('|')[-1].rpartition('|')[0]
+                Kms_list = []
+                Kms_list = Rubisco[name]
+                Kms = ' '.join(str(v) for v in Kms_list)
+                print (i+1, x[i-1], low_freq_AAs[x[i-1]], name, Kms)
 
 
     i+=1
-
-
-
 
