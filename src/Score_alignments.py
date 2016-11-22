@@ -5,7 +5,7 @@ import pandas as pd
 
 
  # open and read fasta files in VIENNA alignment format
- # sperate names and store separately
+ # separate names and store separately
  #
 
 df = pd.read_csv("../Alignments/Km_data.csv")
