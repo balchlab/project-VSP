@@ -1,0 +1,36 @@
+Rubisco Host,RbcL Sequence,RbcS Sequence,Combo Sequence,Km CO2,SD Km O2,Km O2,SD km O2,Kcat CO2,SD KcatCO2,Sc/o,SD Sc/o,Kcat O2,Ref,Class
+Chlamydomonas reinhardtii,P00877,P00873,C. reinhardtii,31,_2,527,20,5.8,_0.2,60,1,,Genkov and Spreitzer. 2009,Green algae____
+Euglena gracilis,P00878,P16881,E. gracilis,25,_2,410,_50,,,54,2,,Savir et al. 2010,Green algae____
+Marchantia polymorpha,P06292,,,12.7,_0.3,565,_64,2.6,_0.2,,,,Galmes et al. 2014,Borophytes______
+Atrichum undulatum,X5IB77,,,19.2,_0.1,806,_100,3,_0.2,,,,Galmes et al. 2014,Borophytes______
+Platycerium superbum,X5I0Y3,,,12.4,_0.2,459,_42,2.3,_0.1,,,,Galmes et al. 2014,Ferns______
+Pteridium aquilinum,X5ICS9,,,13.9,_0.1,391,_14,4,_0.1,,,,Galmes et al. 2014,Ferns______
+Nymphaea alba,Q6EW71,,,11.2,_0.4,438,_43,2.4,_0.1,,,,Galmes et al. 2014,Basal Angiosperms________
+Metasequoia glyptostroboides,A0A0G4AJP0,,,15.5,_1.3,561,_68,2.7,_0.4,,,,Galmes et al. 2014,Gymnosperms______
+Cycas panzhihuaensis,X5IB65,,,8.8,_0.2,525,_21,3.1,_0.3,,,,Galmes et al. 2014,Gymnosperms______
+Triticum aestivum,P11383,P26667,T. aestivum,10.3,_0.1,414,_7,4,_0.1,90,1,,Galmes et al. 2014,C3 Plants_C3 ___
+Dactylis glomerata,Q5K3D9,,,10.7,_0.1,453,_79,3.2,_0.2,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Zea mays,P00874,P05348,Z. mays,34,_2.4,810,_97,4.4,_0.1,78,3,,Savir et al. 2010,C4 Plants (C4 ___
+Limonium virgatum ,A0A068EM41,,,8.5,_0.2,381,_35,2.4,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Limonium latebracteatum,X5ICS6,,,8.8,_1.0,344,_7,2.7,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Limonium stenophyllum,X5IB74,,,8.4,_0.2,457,_36,2.6,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Arabidopsis thaliana,O03042,P10796,A. thaliana,9.8,_0.3,192,_217,3.0_,_0.2,80,2,,Whitney et al. 2015,C3 Plants_C3 ___
+Trachycarpus fortunei,Q9BA63,,,9,_0.8,364,_21,2.8,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Agave victoriae,X5I0H3,,,9.7,_0.4,400,_44,3.4,_0.1,,,,Galmes et al. 2014,CAM plants _________
+Iris douglasiana,X5ICR4,,,9.7,_0.6,413,_22,3.5,_0.2,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Carpobrotus edulis,A2VA54,,,9.5,_0.2,313,_17,3.6,_0.1,,,,Galmes et al. 2014,CAM plants _________
+Drosera capensis,P28405,,,10.3,_0.4,327,_24,4.7,_0.2,,,,Galmes et al. 2014,Carnivorous plants______
+Drosera venusta,X5ICR6,,,11.8,_0.2,348,_5,3.3,_0.1,,,,Galmes et al. 2014,Carnivorous plants______
+Chenopodium album,S4TAB7,A0A089VME3,C. album,11.2,_2.8,415,_16,2.9,_0.1,79,1,,Savir et al. 2010,C3 Plants_C3 ___
+Spinacia oleracea,P00875,Q43832,S. oleracea,12.1,_0.8,574,_19,3.2,_0.1,80,1,,Savir et al. 2010,C3 Plants_C3 ___
+Nicotiana tabacum,P00876,P69249,N. tabacum,12.6,_0.2,274,_18,3.2,_0.2,81,1,0.8,Whitney et al. 2011b,C3 Plants_C3 ___
+Teucrium heterophyllum,X5I0G8,,,6.7,_0.1,356,_65,2.7,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Sideritis cretica,X5IB66,,,7.8,_0.1,328,_16,2,_0.3,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Sarracenia flava,P28451,,,12.6,_0.1,426,_19,4.4,_0.1,,,,Galmes et al. 2014,Carnivorous plants______
+Pallenis maritima,X5I0X2,,,6.4,_0.3,321,_20,2.7,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Flaveria bidentis,P19161,Q84NG5,F. bidentis,20.4,_0.5,420,_37,4.8,_0.3,81,1,1.2,Whitney et al. 2011b,C4 Plants (C4 ___
+Flaveria pringlei,P19162,Q39743,F. pringlei,13.7,_0.5,376,_35,3.5,_0.3,82,1,1.1,Whitney et al. 2011b,C3 Plants_C3 ___
+Flaveria floridana,E9N7B0,E9N7G7,F. floridana,14.4,_0.5,374,_33,3.6,_0.1,82,2,1.1,Whitney et al. 2011b,C3 Plants_C3 ___
+Ceratophyllum demersum,Q05798,,,13.6,_0.5,317,_13,3.5,_0.2,,,,Galmes et al. 2014,C3 Plants_C3 ___
+Echeveria elegans,X5HXR0,,,10.5,_0.7,236,_27,4.5,_0.2,,,,Galmes et al. 2014,Carnivorous plants______
+Crithmum maritimum,A0A0D2X737,,,8.7,_0.1,183,_31,3.4,_0.1,,,,Galmes et al. 2014,C3 Plants_C3 ___
