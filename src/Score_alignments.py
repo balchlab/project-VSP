@@ -4,17 +4,17 @@ import collections, time
 import pandas as pd
 
 
- # open and read fasta files
+ # open and read fasta files in VIENNA alignment format
  # sperate names and store separately
  #
 
 df = pd.read_csv("../Alignments/Km_data.csv")
 
 Rubisco_data = df[['RbcL Sequence', 'Km CO2', 'Km O2']]
-print (Rubisco_data.head(5))
+
 Rubisco = {}
 Rubisco = Rubisco_data.set_index('RbcL Sequence').T.to_dict('list')
-
+Results = pd.DataFrame(columns=('AA_pos', 'Low_Freq_sub','Freq', 'ProtID', 'Km CO2/Km O2'))
 
 
 fasta = {}
@@ -29,11 +29,13 @@ with open("../Alignments/Rubisco.txt") as file_one:
                 fasta[active_sequence_name] = []
             continue
         sequence = line
+        seq_length = len(line)
         fasta[active_sequence_name].append(list(sequence))
 
 i = 0
 
-while i < 100: # this needs to be changed to total length of alignment
+
+while i < seq_length:
 
     str_list = []
     s = ""
@@ -75,7 +77,10 @@ while i < 100: # this needs to be changed to total length of alignment
                 Kms_list = Rubisco[name]
                 Kms = ' '.join(str(v) for v in Kms_list)
                 print (i+1, x[i-1], low_freq_AAs[x[i-1]], name, Kms)
-
+                new_row = (i+1, x[i-1], low_freq_AAs[x[i-1]], name, Kms)
+                Results.loc[i] = new_row
 
     i+=1
+print (Results.head(5))
+Results.to_csv('../Alignments/Rubisco.csv')
 
