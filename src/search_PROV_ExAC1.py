@@ -25,39 +25,47 @@ import json
 VCF_HEADER = ['CHROM', 'POS', 'ID', 'REF', 'ALT', 'QUAL', 'FILTER', 'INFO']
 
 # Sets protein ID to search in dataframe
+
+ENST = "ENST00000448921" #A1AT
+ENSP = "ENSP00000348068" #A1AT
+ENSG = "ENSG00000197249" #A1AT
+
 #ENSP = "ENSP00000003084" #CFTR
 #ENSP = "ENSP00000269228" #NPC1
-ENSP = "ENSP00000262304" #PKD1
+#ENSP = "ENSP00000262304" #PKD1
 #ENSP = "ENSP00000262410" #MAPT
 #ENSG = "ENSG00000001626" #CFTR
 #ENSG = "ENSG00000141458" #NPC1
-ENSG = "ENSG00000008710" #PKD1
-ENSG = "ENSG00000118762" #PKD2
+#ENSG = "ENSG00000008710" #PKD1
+#ENSG = "ENSG00000118762" #PKD2
 #ENSG = "" #PKD2
 #ENSG = "ENSG00000186868" #ENSG
 # ENSG = "ENSG00000186868" #MAPT
 # ENSG = "ENSG00000272636" #Diagnostic - beginning of Chr17
 #ENST = "ENST00000003084" CFTR
 #ENST = 'ENST00000269228' #NPC1i
-ENST = "ENST00000262304" #PKD1
-ENST = "ENST00000237596" #PKD2
+#ENST = "ENST00000262304" #PKD1
+#ENST = "ENST00000237596" #PKD2
 #ENST = "ENST00000262410" #MAPT
 
 
 GENE = "MAPT"
 FILENAME = "CFTR_PROV_extract.csv"
 FILENAME1 = "CFTR_PROVEANScores.csv"
-FILENAME2 = "MAPT_ExACScores.csv"
-FILENAME3 = "MAPT_MutPredScores.csv"
-FILENAME4 = "PKD2_dbNSFPa_output.csv"
+FILENAME2 = "A1AT_ExACScores.csv"
+FILENAME3 = "A1AT_MutPredScores.csv"
+FILENAME4 = "A1AT_dbNSFPa_output.csv"
 FILENAME5 = "dbNSFP_extract.csv"
-FILENAME6 = "MAPT_ExACScores.csv"
+FILENAME6 = "A1AT_ExACScores.csv"
 #UniProt = "P13569" CFTR
+UniProt = "P01009" #A1AT
 #UniProt = "O15118" #NPC1
 #UniProt = "P98161" #PKD1
-UniProt = "P10636" #MAPT
+#UniProt = "P10636" #MAPT
 #Chr = '18' NPC1
-Chr = "4" #PKD2
+Chr = "14" #A1AT
+#Chr = "4" #PKD2
+#Chr = "16" #PKD1
 #Chr = "1"
 
 # change directory to working with DAta
@@ -238,15 +246,21 @@ def mine_dbNSFP(Chr, ENSG):
         print(ENSG)
         for line in enumerate(tsvin.open(chrfilesdict[Chr])):
             line = line[1].decode("utf-8").rstrip().split('\t')
-
             if ENST == line[20]:
                 writer.writerows([line])
             elif ENST in line[20] and ';' in line[20]:
+
                 for i, val in enumerate(line):
                     if ';' in val:
+
                         val = val.split(';', 1)[0]
                         line[i] = val
-                writer_temp.writerows([line])
+                    if val == '.':
+
+
+                        line [i] = '0'
+
+                writer.writerows([line])
 
 def db_NSFP_iterate(fh):
     #TODO: rewrite to account for Chr vs int variables and to reduce unnecessary searching.
@@ -511,15 +525,15 @@ def main():
     # findPROVEANscores(ENSP)
     # formatPROVEAN(FILENAME)
 
-    # mineExAC(ENST, Chr)
+    #mineExAC(ENST, Chr)
 
-    #lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+    lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
 
 
     #filterExACoutput('Exac_parse_OUT.csv')
 
 
-    #mineMutPred(UniProt,ENST,Chr)
+    mineMutPred(UniProt,ENST,Chr)
     mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
     #cleanup_dbNSFP_extract(FILENAME4)
