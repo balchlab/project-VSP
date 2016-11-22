@@ -77,8 +77,10 @@ while i < seq_length:
                 Kms_list = Rubisco[name]
                 Kms = ' '.join(str(v) for v in Kms_list)
                 print (i+1, x[i-1], low_freq_AAs[x[i-1]], name, Kms)
-                new_row = (i+1, x[i-1], low_freq_AAs[x[i-1]], name, Kms)
-                Results.loc[i] = new_row
+
+                new_row = ([i+1, x[i-1], low_freq_AAs[x[i-1]], name, Kms])
+                #print (new_row)
+                Results.loc[len(Results)+1]= new_row
 
     i+=1
 print (Results.head(5))
