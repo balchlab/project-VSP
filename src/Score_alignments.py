@@ -40,7 +40,7 @@ while i < 100: # this needs to be changed to total length of alignment
 
             s+=x[i-1]
 
-    print (s)
+    #print (s)
     Count = collections.Counter(s)
 
     for key, value in Count.items ():
