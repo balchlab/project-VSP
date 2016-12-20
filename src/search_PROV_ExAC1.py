@@ -8,17 +8,11 @@ return csv file.
 '''
 from __future__ import print_function
 #from chardet.universaldetector import UniversalDetector
-import sys, traceback, subprocess, gzip, glob, tarfile, os, signal
+import sys, gzip, tarfile, os
 import pandas as pd
 import csv
-import numpy as np
-from pandas import HDFStore, DataFrame
-import h5py
 import zipfile
-import odo
 from collections import OrderedDict
-import collections
-from time import sleep
 import string
 import json
 
@@ -67,6 +61,12 @@ Chr = "14" #A1AT
 #Chr = "4" #PKD2
 #Chr = "16" #PKD1
 #Chr = "1"
+
+FILENAME6 = "SOD1_ExACScores.csv"
+ENSG = "ENSG00000142168" #SOD1
+ENST = "ENST00000270142" #SOD1
+Chr = "21" #SOD1
+
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -533,8 +533,8 @@ def main():
     #filterExACoutput('Exac_parse_OUT.csv')
 
 
-    mineMutPred(UniProt,ENST,Chr)
-    mine_dbNSFP(Chr, ENSG)
+    #mineMutPred(UniProt,ENST,Chr)
+    #mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
     #cleanup_dbNSFP_extract(FILENAME4)
 

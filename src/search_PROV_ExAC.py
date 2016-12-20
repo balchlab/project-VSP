@@ -8,17 +8,11 @@ return csv file.
 '''
 from __future__ import print_function
 #from chardet.universaldetector import UniversalDetector
-import sys, traceback, subprocess, gzip, glob, tarfile, os, signal
+import sys, gzip, tarfile, os
 import pandas as pd
 import csv
-import numpy as np
-from pandas import HDFStore, DataFrame
-import h5py
 import zipfile
-import odo
 from collections import OrderedDict
-import collections
-from time import sleep
 import string
 import json
 
@@ -32,6 +26,7 @@ ENSP = "ENSP00000262304" #PKD1
 #ENSG = "ENSG00000001626" #CFTR
 #ENSG = "ENSG00000141458" #NPC1
 ENSG = "ENSG00000008710" #PKD1
+
 #ENSG = "" #PKD2
 #ENSG = "ENSG00000186868" #ENSG
 # ENSG = "ENSG00000186868" #MAPT
@@ -39,24 +34,32 @@ ENSG = "ENSG00000008710" #PKD1
 #ENST = "ENST00000003084" CFTR
 #ENST = 'ENST00000269228' #NPC1i
 ENST = "ENST00000262304" #PKD1
+
 #ENST = "ENST00000262410" #MAPT
 
 
 GENE = "MAPT"
 FILENAME = "CFTR_PROV_extract.csv"
 FILENAME1 = "CFTR_PROVEANScores.csv"
-FILENAME2 = "MAPT_ExACScores.csv"
+
 FILENAME3 = "MAPT_MutPredScores.csv"
 FILENAME4 = "PKD1_dbNSFPa_output.csv"
 FILENAME5 = "dbNSFP_extract.csv"
-FILENAME6 = "MAPT_ExACScores.csv"
+
 #UniProt = "P13569" CFTR
 #UniProt = "O15118" #NPC1
 #UniProt = "P98161" #PKD1
 UniProt = "P10636" #MAPT
+UniProt = "P00441" #SOD1
 #Chr = '18' NPC1
 Chr = "16" #PKD1
+
 #Chr = "1"
+
+FILENAME6 = "SOD1_ExACScores.csv"
+ENSG = "ENSG00000142168" #SOD1
+ENST = "ENST00000270142" #SOD1
+Chr = "21" #SOD1
 
 # change directory to working with DAta
 os.chdir("../Data/")
@@ -536,14 +539,14 @@ def main():
 
     # mineExAC(ENST, Chr)
 
-    #lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
+    lines('ExAC.r0.3.1.sites.vep.vcf.gz', Chr)
 
 
     #filterExACoutput('Exac_parse_OUT.csv')
 
 
     #mineMutPred(UniProt,ENST,Chr)
-    mine_dbNSFP(Chr, ENSG)
+    #mine_dbNSFP(Chr, ENSG)
     #extract_dbNSFP(FILENAME4)
     #cleanup_dbNSFP_extract(FILENAME4)
 
