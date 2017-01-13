@@ -6,6 +6,9 @@ import csv
 import pandas as pd
 import re
 
+
+##Mine and clean up ClinVar txt file containing clinical information on pathogenic and neutral variants across genetic disease
+
 replacements = {
 'Gly':'G',
 'Ala':'A',

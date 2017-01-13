@@ -1,42 +1,53 @@
 #BalchLab 2016
 #Creates a geostatistical map of genes using ExAC data
 
-library(fields)
-library(sp)
-library(gstat)
+library (fields)
+library (sp)
+library (gstat)
 library (ggplot2)
 require (reshape2)
 library (survival)
-library ('ggthemes')
-library ('scales')
+library (ggthemes)
+library (scales)
 library ('dplyr')
-library ('mice')
-library ('randomForest')
-library(scales) # for "comma"
+library (mice)
+library (randomForest)
 library(magrittr)
 
 #Set variables 
 
 
-setwd ("D:/Balclab/projects/project-VSP/")
-
+setwd ("/Users/Vlad/projects/project-VSP/")
+myvars <- c("GENE_ID", "AA_POS", "MUTATION", "ALLELE.COUNT", "Pathogenic")
 PROV_DATA <- "Data/CFTR_PROVEANScores.csv"
-EXAC_DATA <- "Data/PKD1_ExACScores.csv"
-MUTPRED_DATA <- "Data/PKD1_MutPredScores.csv"
-SavePlot <-"/VSP-images/PKD1_MutPred-EXAC.png"
+EXAC_DATA <- "Data/MAPT_ExACScores.csv"
+MUTPRED_DATA <- "Data/MAPT_MutPredScores.csv"
+SavePlot <-"/VSP-images/MAPT_MutPred-EXAC.png"
 AC_Limit <- 10
-GraphTitle <- c("PKD1 MutPpred - ExAC, AC Limit =", AC_Limit)
+GraphTitle <- c("MAPT MutPpred - ExAC, AC Limit =", AC_Limit)
                 
-
+ClinVar <-read.csv ("Data/ClinVar_built.csv",  sep = ",")
+ClinVar <- ClinVar[ which(ClinVar$GeneSymbol=='MAPT'),]
+colnames (ClinVar)[10] <-"MUTATION"
+colnames (ClinVar)[5] <-"GENE_ID"
+colnames (ClinVar)[11] <-"AA_POS"
+ClinVar["ALLELE.COUNT"] <- 0
+ClinVar["Pathogenic"] <- "P"
 
 #read data files
 EXAC<-read.csv(EXAC_DATA)
-PROV<-read.csv(PROV_DATA, sep =',')
-PROV_transformed<-reshape(PROV, idvar="position", v.names = "PROV_Scores", timevar ="Index", varying = c("A", "C", "D", "E","F", "G", "H", "I", "K", "L", "M", "N","P", "Q", "R", "S", "T", "V", "W", "Y","Del"), direction="long")
+EXAC["Pathogenic"] <- ""
+EXAC <- EXAC[myvars]
+ClinVar <-ClinVar[myvars]
+
+#PROV<-read.csv(PROV_DATA, sep =',')
+#PROV_transformed<-reshape(PROV, idvar="position", v.names = "PROV_Scores", timevar ="Index", varying = c("A", "C", "D", "E","F", "G", "H", "I", "K", "L", "M", "N","P", "Q", "R", "S", "T", "V", "W", "Y","Del"), direction="long")
 MutPred<-read.csv(MUTPRED_DATA)
 #colnames (PROV_transformed)[2] <-"AA_POSITION"
 #colnames (PROV_transformed)[4] <-"PROVEAN_SCORE"
-Merged_DF<-merge(EXAC,MutPred, by=c("MUTATION"), all =FALSE)
+Merged_DF <- rbind(EXAC, ClinVar)
+Merged_DF<-merge(Merged_DF,MutPred, by=c("MUTATION"), all =FALSE)
+
 
 Merged_DF[is.na(Merged_DF)]<-0
 
@@ -46,16 +57,16 @@ EXAC$Ptein.Consequence<-gsub("p.","", as.character(EXAC$amino_acid_change))
 #adjust prediction scores - so that the range is similar to AA coordinates
 Merged_DF$PROVEAN_SCORE <- Merged_DF$PROVEAN_SCORE*-100
 Merged_DF$MUTPRED.Score<-round(Merged_DF$MUTPRED.Score*100, 0)
-Merged_DF$MUTPRED.Score<-rescale(Merged_DF$MUTPRED.Score, to =c(1,2000)) #TODO:needs to be auto set to length of protein
+Merged_DF$MUTPRED.Score<-rescale(Merged_DF$MUTPRED.Score, to =c(1,800)) #TODO:needs to be auto set to length of protein
 
 #set max allele count to a value best suited for analysis
 #TODO:Figure out how to do this algorithmically
 Merged_DF$ALLELE.COUNT[Merged_DF$ALLELE.COUNT>AC_Limit]<-AC_Limit
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
-#OP      <- par( mar=c(2,2,2,2))
+OP      <- par( mar=c(2,2,2,2))
 coordinates(Merged_DF) <- c("AA_POS","MUTPRED.Score")
-plot(Merged_DF, pch=16, ,cex=((Merged_DF$ALLELE.COUNT-1)/200))
+plot(Merged_DF, pch=16, cex=((Merged_DF$ALLELE.COUNT-1)/200))
 text(Merged_DF, as.character(Merged_DF$ALLELE.COUNT), pos=3, col="grey", cex=0.8)
 
 # Create an empty grid where n is the total number of cells
@@ -70,9 +81,9 @@ fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 Merged_DF.idw <- idw(ALLELE.COUNT~1,Merged_DF,newdata=grd,idp=3.0)
 # Plot the raster and the sampled points
 #OP      <- par( mar=c(6,2,2,2))
-png(filename=SavePlot)
+png(filename='Image5.png')
 
-par(mar = c(4, 3, 2,4 ), mgp = c(1, 0.5, 0))
+par(mar = c(4, 10, 2,4 ), mgp = c(1, 0.5, 0))
 
 image(Merged_DF.idw,"var1.pred",col=terrain.colors(50), xlab="AA POSITION", ylab="MutPRED", mgp = c(1, 4, 0))
 x.tick.number <- 10
@@ -85,13 +96,14 @@ at <- seq(1, max(Merged_DF$MUTPRED.Score), length.out=y.tick.number)
 axis(2, at = at, labels = NULL , las = 1, pos=0)
 
 contour(Merged_DF.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
-#box()
+box()
 plot(Merged_DF, add=TRUE, pch=16, cex=0.5)
-#text(coordinates(Merged_DF), as.character(round(Merged_DF$AA_POS,1)), pos=4, cex=0.8, col="blue")
+#text(coordinates(Merged_DF), as.character(round(Merged_DF$Pathogenic,1)), pos=4, cex=0.8, col="blue")
+text(coordinates(Merged_DF), as.character(Merged_DF$Pathogenic,1), pos=4, cex=0.8, col="red")
 parameters<-par(OP)
 str(OP)
 title(main=GraphTitle, font.main =4)
-#dev.off()
+dev.off()
 
 
 
