@@ -19,19 +19,22 @@ library(magrittr)
 
 setwd ("/Users/Vlad/projects/project-VSP/")
 myvars <- c("GENE_ID", "AA_POS", "MUTATION", "ALLELE.COUNT", "Pathogenic")
-PROV_DATA <- "Data/CFTR_PROVEANScores.csv"
+PROV_DATA <- "Data/MAPT_PROVEANScores.csv"
 EXAC_DATA <- "Data/MAPT_ExACScores.csv"
 MUTPRED_DATA <- "Data/MAPT_MutPredScores.csv"
-SavePlot <-"/VSP-images/MAPT_MutPred-EXAC.png"
-AC_Limit <- 10
-GraphTitle <- c("MAPT MutPpred - ExAC, AC Limit =", AC_Limit)
+AmylSurf_DATA <- "Data/MAPT_Amyl_consurf.csv"
+SavePlot <-"/VSP-images/PKD2_MutPred-EXAC.png"
+AC_Limit <- 1000
+GraphTitle <- c("MAPT MutPpred - ExAC, Log transformed")
+
+AmylSurf <- read.csv (AmylSurf_DATA,  sep = ",")
                 
 ClinVar <-read.csv ("Data/ClinVar_built.csv",  sep = ",")
 ClinVar <- ClinVar[ which(ClinVar$GeneSymbol=='MAPT'),]
 colnames (ClinVar)[10] <-"MUTATION"
 colnames (ClinVar)[5] <-"GENE_ID"
 colnames (ClinVar)[11] <-"AA_POS"
-ClinVar["ALLELE.COUNT"] <- 0
+ClinVar["ALLELE.COUNT"] <- 0.10
 ClinVar["Pathogenic"] <- "P"
 
 #read data files
@@ -49,6 +52,7 @@ Merged_DF <- rbind(EXAC, ClinVar)
 Merged_DF<-merge(Merged_DF,MutPred, by=c("MUTATION"), all =FALSE)
 
 
+
 Merged_DF[is.na(Merged_DF)]<-0
 
 #modify amino acid notation to drop .p (ExAC format)
@@ -58,41 +62,51 @@ EXAC$Ptein.Consequence<-gsub("p.","", as.character(EXAC$amino_acid_change))
 Merged_DF$PROVEAN_SCORE <- Merged_DF$PROVEAN_SCORE*-100
 Merged_DF$MUTPRED.Score<-round(Merged_DF$MUTPRED.Score*100, 0)
 Merged_DF$MUTPRED.Score<-rescale(Merged_DF$MUTPRED.Score, to =c(1,800)) #TODO:needs to be auto set to length of protein
+Merged_DF$ALLELE.COUNT.log<-log(Merged_DF$ALLELE.COUNT)
+
+
+Merged_DF<-merge(Merged_DF,AmylSurf, by=c("AA_POS"), all =FALSE)
+
+
+Merged_DF$a4v<-rescale(Merged_DF$a4v, to =c(1,700))
+
+write.csv(Merged_DF, file = "Data/TAU_Merged_Data.csv")
+
 
 #set max allele count to a value best suited for analysis
 #TODO:Figure out how to do this algorithmically
-Merged_DF$ALLELE.COUNT[Merged_DF$ALLELE.COUNT>AC_Limit]<-AC_Limit
+#Merged_DF$ALLELE.COUNT[Merged_DF$ALLELE.COUNT>AC_Limit]<-AC_Limit
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
 OP      <- par( mar=c(2,2,2,2))
-coordinates(Merged_DF) <- c("AA_POS","MUTPRED.Score")
-plot(Merged_DF, pch=16, cex=((Merged_DF$ALLELE.COUNT-1)/200))
-text(Merged_DF, as.character(Merged_DF$ALLELE.COUNT), pos=3, col="grey", cex=0.8)
+coordinates(Merged_DF) <- c("AA_POS","a4v")
+plot(Merged_DF, pch=16, cex=((Merged_DF$ALLELE.COUNT.log-1)/200))
+text(Merged_DF, as.character(Merged_DF$ALLELE.COUNT.log), pos=3, col="grey", cex=0.8)
 
 # Create an empty grid where n is the total number of cells
 #layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
 
 grd              <- as.data.frame(spsample(Merged_DF, "regular", n=60000))
-names(grd)       <- c("AA_POS", "MUTPRED.Score")
-coordinates(grd) <- c("AA_POS","MUTPRED.Score")
+names(grd)       <- c("AA_POS", "a4v")
+coordinates(grd) <- c("AA_POS", "a4v")
 gridded(grd)     <- TRUE  # Create SpatialPixel object
 fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 # Interpolate the surface using a power value of 2 (idp=2.0)
-Merged_DF.idw <- idw(ALLELE.COUNT~1,Merged_DF,newdata=grd,idp=3.0)
+Merged_DF.idw <- idw(ALLELE.COUNT.log~1,Merged_DF,newdata=grd,idp=3.0)
 # Plot the raster and the sampled points
 #OP      <- par( mar=c(6,2,2,2))
-png(filename='Image5.png')
+png(filename='MAPT_Aggregation.png')
 
-par(mar = c(4, 10, 2,4 ), mgp = c(1, 0.5, 0))
+par(mar = c(4, 3, 2,4 ), mgp = c(1, 0.5, 0))
 
-image(Merged_DF.idw,"var1.pred",col=terrain.colors(50), xlab="AA POSITION", ylab="MutPRED", mgp = c(1, 4, 0))
+image(Merged_DF.idw,"var1.pred",col=terrain.colors(50), xlab="AA POSITION", ylab="Aggregation", mgp = c(1, 4, 0))
 x.tick.number <- 10
 y.tick.number <- 10
 
 at <- seq(1, max(Merged_DF$AA_POS), length.out=x.tick.number)
 axis(1, at = Merged_DF$AA_POSITION, labels = Merged_DF$AA_POSITION, las =1, pos=0)
                              #round(EXAC$MUT_PRED, 0)
-at <- seq(1, max(Merged_DF$MUTPRED.Score), length.out=y.tick.number)
+at <- seq(1, max(Merged_DF$ALLELE.COUNT.log), length.out=y.tick.number)
 axis(2, at = at, labels = NULL , las = 1, pos=0)
 
 contour(Merged_DF.idw,"var1.pred", add=TRUE, nlevels=10, col="#656565")
@@ -186,11 +200,11 @@ dev.off()
 # PROVEAN<-split_cols(EXAC$Ptein.Consequence)
 # write.csv(PROVEAN,"PKD2_provean.csv")
 # 
-# CFTR_muts<-as.character(exac_CFTR$Conseqence)
+# PKD2_muts<-as.character(exac_PKD2$Conseqence)
 # 
-# CFTR_PROVEAN<-split_cols(CFTR_muts) 
+# PKD2_PROVEAN<-split_cols(PKD2_muts) 
 # 
-# write.csv(CFTR_PROVEAN,"CFTR_provean.csv")
+# write.csv(PKD2_PROVEAN,"PKD2_provean.csv")
 # 
 # mut_pred<-read.csv("gainullin_mutpred.csv")
 # 
