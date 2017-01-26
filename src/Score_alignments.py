@@ -13,10 +13,11 @@ df = pd.read_csv("../Alignments/Km_data.csv")
 Rubisco_data = df[['RbcL Sequence', 'Km CO2', 'Km O2']]
 
 Rubisco = {}
+
 Rubisco = Rubisco_data.set_index('RbcL Sequence').T.to_dict('list')
-Results = pd.DataFrame(columns=('AA_pos', 'Low_Freq_sub','Freq', 'ProtID', 'Km CO2/Km O2'))
+Results = pd.DataFrame(columns=('AA_pos', 'Low_Freq_sub','Freq', 'ProtID' , 'Km CO2/Km O2'))
 
-
+seq_number =0
 fasta = {}
 with open("../Alignments/Rubisco.txt") as file_one:
     for line in file_one:
@@ -24,6 +25,7 @@ with open("../Alignments/Rubisco.txt") as file_one:
         if not line:
             continue
         if line.startswith(">"):
+            seq_number +=1
             active_sequence_name = line[1:]
             if active_sequence_name not in fasta:
                 fasta[active_sequence_name] = []
@@ -58,11 +60,11 @@ while i < seq_length:
 
         #print (i+1, key, value/35*100,'%')
 
-        if 50 > value/35*100:
+        if 50 > value/seq_number*100:
             #print ("low")
             #print ("key:", key)
 
-            low_freq_AAs[key] = value/35*100
+            low_freq_AAs[key] = value/seq_number*100
 
     #print (low_freq_AAs)
 

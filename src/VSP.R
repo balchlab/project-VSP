@@ -69,6 +69,8 @@ Merged_DF<-merge(Merged_DF,AmylSurf, by=c("AA_POS"), all =FALSE)
 
 
 Merged_DF$a4v<-rescale(Merged_DF$a4v, to =c(1,700))
+Merged_DF$ConSurf_index<-rescale(Merged_DF$ConSurf_index, to =c(1,700))
+
 
 write.csv(Merged_DF, file = "Data/TAU_Merged_Data.csv")
 
@@ -79,7 +81,7 @@ write.csv(Merged_DF, file = "Data/TAU_Merged_Data.csv")
 
 #Spacial Interpolation using amino acid index and prediction score as x and y axis
 OP      <- par( mar=c(2,2,2,2))
-coordinates(Merged_DF) <- c("AA_POS","a4v")
+coordinates(Merged_DF) <- c("AA_POS","ConSurf_index")
 plot(Merged_DF, pch=16, cex=((Merged_DF$ALLELE.COUNT.log-1)/200))
 text(Merged_DF, as.character(Merged_DF$ALLELE.COUNT.log), pos=3, col="grey", cex=0.8)
 
@@ -87,8 +89,8 @@ text(Merged_DF, as.character(Merged_DF$ALLELE.COUNT.log), pos=3, col="grey", cex
 #layout(matrix(c(1,1,2,3), 2, 2, byrow = TRUE))
 
 grd              <- as.data.frame(spsample(Merged_DF, "regular", n=60000))
-names(grd)       <- c("AA_POS", "a4v")
-coordinates(grd) <- c("AA_POS", "a4v")
+names(grd)       <- c("AA_POS", "ConSurf_index")
+coordinates(grd) <- c("AA_POS", "ConSurf_index")
 gridded(grd)     <- TRUE  # Create SpatialPixel object
 fullgrid(grd)    <- TRUE  # Create SpatialGrid object
 # Interpolate the surface using a power value of 2 (idp=2.0)
